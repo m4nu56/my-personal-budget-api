@@ -107,12 +107,7 @@ const analyzeMovementByMonthByCategory = (request, response) => {
         'group by year, month, category\n' +
         'order by year, month, category\n';
 
-    pool.query(query, (error, result) => {
-        if (error) {
-            throw error;
-        }
-        response.status(200).send(result.rows);
-    });
+    return pool.query(query);
 };
 
 module.exports = {
