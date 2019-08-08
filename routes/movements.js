@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./movementQueries');
+const db = require('../queries/movementQueries');
 
 router.get('/', db.getMovements);
 router.get('/:id', db.getMovementById);

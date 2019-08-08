@@ -1,5 +1,5 @@
 const express = require('express');
-const db = require('./movementQueries');
+const db = require('../queries/movementQueries');
 const router = express.Router();
 
 router.get('/', async (request, response) => {
@@ -18,10 +18,10 @@ router.get('/summary', async (request, response) => {
         let summary = new Map();
         result.rows.forEach(row => {
 
-            if (!summary.has(row.category)) {
-                summary.set(row.category, []);
+            if (!summary.has(row.id_category)) {
+                summary.set(row.id_category, []);
             }
-            summary.get(row.category).push(row);
+            summary.get(row.id_category).push(row);
         });
 
         let body = JSON.stringify(Array.from(summary.entries()));
