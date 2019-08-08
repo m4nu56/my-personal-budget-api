@@ -15,6 +15,19 @@ function buildQueryGetAllFromMovements () {
            + 'JOIN t_category C ON C.id=M.id_category';
 }
 
+/**
+ * Factory pattern to create a new Movement
+ * @param id
+ * @param year
+ * @param month
+ * @param date
+ * @param amount
+ * @param label
+ * @param category_id
+ * @param category_name
+ * @param category_id_parent
+ * @returns {{date: *, amount: *, month: *, year: *, id: *, label: *, category: {name: *, id: *, id_parent: *}}}
+ */
 function buildMovement ({id, year, month, date, amount, label, category_id, name: category_name, id_parent: category_id_parent}) {
     return {
         id: id,
@@ -31,6 +44,18 @@ function buildMovement ({id, year, month, date, amount, label, category_id, name
     };
 }
 
+/**
+ * Constructor pattern to create a new Movement()
+ * @param id
+ * @param year
+ * @param month
+ * @param date
+ * @param amount
+ * @param label
+ * @param category_id
+ * @param category_name
+ * @param category_id_parent
+ */
 function movement ({id, year, month, date, amount, label, category_id, name: category_name, id_parent: category_id_parent}) {
     this.id = id;
     this.year = year;
@@ -59,7 +84,7 @@ const getMovements = (request, response) => {
             throw error;
         }
         let movements = [];
-        results.rows.forEach(m => movements.push(buildMovement(m)));
+        results.rows.forEach(m => movements.push(new movement(m)));
         response.status(200).json(movements);
     });
 };
@@ -72,7 +97,7 @@ const getMovementById = (request, response) => {
         if (error) {
             throw error;
         }
-        response.status(200).json(buildMovement(results.rows[0]));
+        response.status(200).json(new movement(results.rows[0]));
     });
 };
 
