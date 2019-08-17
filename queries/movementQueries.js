@@ -10,38 +10,9 @@ const pool = new Pool({
                       });
 
 function buildQueryGetAllFromMovements () {
-    return 'SELECT M.id::integer, year, month, date, amount, label, C.id AS category_id, C.name as category_name, C.id_parent AS category_id_parent '
+    return 'SELECT M.id::integer, year, month, date, amount, label, C.id::integer AS category_id, C.name as category_name, C.id_parent::integer AS category_id_parent '
            + 'FROM t_movement M '
            + 'JOIN t_category C ON C.id=M.id_category';
-}
-
-/**
- * Factory pattern to create a new Movement
- * @param id
- * @param year
- * @param month
- * @param date
- * @param amount
- * @param label
- * @param category_id
- * @param category_name
- * @param category_id_parent
- * @returns {{date: *, amount: *, month: *, year: *, id: *, label: *, category: {name: *, id: *, id_parent: *}}}
- */
-function buildMovement ({id, year, month, date, amount, label, category_id, name: category_name, id_parent: category_id_parent}) {
-    return {
-        id: id,
-        year: year,
-        month: month,
-        date: date,
-        amount: amount,
-        label: label,
-        category: {
-            id: category_id,
-            name: category_name,
-            id_parent: category_id_parent
-        }
-    };
 }
 
 /**
@@ -117,7 +88,7 @@ const createMovement = (request, response) => {
         if (error) {
             throw error;
         }
-        response.status(201).json(`{"id": ${results.rows[0].id}}`);
+        response.status(201).send(`{"id": ${results.rows[0].id}}`);
     });
 };
 

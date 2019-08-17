@@ -8,7 +8,7 @@ const pool = new Pool({
                       });
 
 const getCategories = (request, response) => {
-    pool.query('SELECT * FROM t_category', (error, results) => {
+    pool.query('SELECT id::integer, name, id_parent::integer FROM t_category', (error, results) => {
         if (error) {
             throw error;
         }
@@ -70,7 +70,7 @@ const updateCategory = (request, response) => {
 const getCategoryById = (request, response) => {
     const id = parseInt(request.params.id);
 
-    pool.query('SELECT * FROM t_category WHERE id = $1', [id], (error, results) => {
+    pool.query('SELECT id::integer, name, id_parent::integer FROM t_category WHERE id = $1', [id], (error, results) => {
         if (error) {
             response.status(400).send();
             throw error;

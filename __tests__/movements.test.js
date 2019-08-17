@@ -30,6 +30,7 @@ describe('Movements', () => {
         let body = response.body;
         console.log(body);
         expect(body.length).toBeGreaterThan(1);
+        expect(body[0].category.name).toBeDefined();
     });
     it('creates and deletes a movement', async () => {
         const {id} = await createRandomMovement();
