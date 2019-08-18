@@ -4,9 +4,6 @@ cache:
   paths:
     - node_modules/
 
-before_script:
-  - npm install
-
 test:
   stage: test
   services:
@@ -22,4 +19,5 @@ test:
     - apt-get update && apt-get install -y postgresql-client libpq-dev
     - PGPASSWORD=$POSTGRES_PASSWORD psql -U $POSTGRES_USER -h $POSTGRES_HOST -d $POSTGRES_DB -f sql/budget.sql
   script:
+    - npm install
     - npm run test
