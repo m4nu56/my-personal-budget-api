@@ -1,12 +1,14 @@
 const moment = require('moment');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const Pool = require('pg').Pool;
 const pool = new Pool({
-                          user: 'postgres',
-                          host: 'localhost',
-                          database: 'budget',
-                          password: 'MxM64B7FEM8ReBigg1',
-                          port: 5439
+                          user: process.env.DB_USER,
+                          host: process.env.DB_HOST,
+                          database: process.env.DB_NAME,
+                          password: process.env.DB_PASSWORD,
+                          port: process.env.DB_PORT
                       });
 
 function buildQueryGetAllFromMovements () {
@@ -27,7 +29,7 @@ function buildQueryGetAllFromMovements () {
  * @param category_name
  * @param category_id_parent
  */
-function movement ({id, year, month, date, amount, label, category_id, name: category_name, id_parent: category_id_parent}) {
+function movement ({id, year, month, date, amount, label, category_id, category_name, category_id_parent}) {
     this.id = id;
     this.year = year;
     this.month = month;
@@ -75,8 +77,6 @@ const getMovementById = (request, response) => {
 const createMovement = (request, response) => {
     const {date, amount, label, category} = request.body;
 
-    console.log(date, moment(date), moment(date).format('D'), moment(date).format('M'));
-
     pool.query('INSERT INTO t_movement (year, month, date, amount, label, id_category) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', [
         Number(moment(date).format('YYYY')),
         Number(moment(date).format('M')),
@@ -88,7 +88,8 @@ const createMovement = (request, response) => {
         if (error) {
             throw error;
         }
-        response.status(201).send(`{"id": ${results.rows[0].id}}`);
+        const id = results.rows[0].id;
+        response.status(201).json(`{"id": ${id}}`);
     });
 };
 

@@ -1,5 +1,4 @@
 const request = require('supertest');
-const moment = require('moment');
 const app = require('../app'); // our Node application
 
 describe('Analyze Movements', () => {
@@ -8,14 +7,11 @@ describe('Analyze Movements', () => {
             .get(`/analyze`)
             .expect(200);
         let body = response.body;
-        console.log(body)
         expect(body.length).toBeGreaterThan(1);
     });
 
     it('succeeds map of analyzed movements grouped by category / month', async () => {
-        const response = await request(app)
-            .get(`/analyze/summary`)
-            .expect(200);
+        const response = await request(app).get(`/analyze/summary`).expect(200);
         let summary = JSON.parse(response.body);
         expect(summary.length).toBeGreaterThan(1);
         summary.forEach(categoryEntry => console.log(categoryEntry[1]))

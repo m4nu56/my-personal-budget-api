@@ -1,10 +1,13 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const Pool = require('pg').Pool;
 const pool = new Pool({
-                          user: 'postgres',
-                          host: 'localhost',
-                          database: 'budget',
-                          password: 'MxM64B7FEM8ReBigg1',
-                          port: 5439
+                          user: process.env.DB_USER,
+                          host: process.env.DB_HOST,
+                          database: process.env.DB_NAME,
+                          password: process.env.DB_PASSWORD,
+                          port: process.env.DB_PORT
                       });
 
 const getCategories = (request, response) => {
@@ -12,14 +15,12 @@ const getCategories = (request, response) => {
         if (error) {
             throw error;
         }
-        console.log(results.rows);
         response.status(200).json(results.rows);
     });
 };
 
 const createCategory = (request, response) => {
     const {name, parentId} = request.body;
-    console.log(request.body);
 
     pool.query('INSERT INTO t_category (name, id_parent) VALUES ($1, $2) RETURNING id', [
         name,
@@ -52,7 +53,6 @@ const deleteCategory = (request, response) => {
 const updateCategory = (request, response) => {
     const id = parseInt(request.params.id);
     const {name, parentId} = request.body;
-    console.log(name, parentId);
 
     pool.query('UPDATE t_category SET name = $2, id_parent = $3 WHERE id = $1', [
         id,

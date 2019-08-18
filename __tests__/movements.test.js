@@ -1,4 +1,4 @@
-const {buildRandomString} = require('./utils');
+const {buildRandomString} = require('../testUtils');
 const {createRandomCategory} = require('./categories.test');
 const request = require('supertest');
 const moment = require('moment');
@@ -25,12 +25,12 @@ async function deleteMovement (id) {
 
 describe('Movements', () => {
     it('succeeds list of movements', async () => {
+        const {id} = await createRandomMovement();
         const response = await request(app).get(`/movements`).expect(200);
-        console.log(response.body);
         let body = response.body;
-        console.log(body);
         expect(body.length).toBeGreaterThan(1);
         expect(body[0].category.name).toBeDefined();
+        await deleteMovement(id);
     });
     it('creates and deletes a movement', async () => {
         const {id} = await createRandomMovement();
@@ -41,7 +41,6 @@ describe('Movements', () => {
         movement.amount = 1;
         await request(app).put(`/movements/${movement.id}`).send(movement).expect(200);
         const response = await request(app).get(`/movements/${movement.id}`).expect(200);
-        console.log(response.body);
         expect(response.body.amount).toEqual(1);
     });
     it('test parsing date', () => {

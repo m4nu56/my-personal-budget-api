@@ -1,0 +1,31 @@
+version: '3.4'
+
+services:
+  postgres_budget:
+    container_name: postgres_budget
+    restart: unless-stopped
+    build: .
+    ports:
+      - 5440:5432
+    volumes:
+#      - postgres_budget_data:/var/lib/postgresql/data
+      - ./sql/budget.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - TZ=Europe/Paris
+      - PGTZ=Europe/Paris
+      - POSTGRES_PASSORD=budget
+      - POSTGRES_USER=budget
+      - POSTGRES_DB=postgres
+
+  #    nodejs:
+  #        container_name: nodejs
+  #        restart: unless-stopped
+  #        build: .
+  #        working_dir: /usr/src/app
+  #        ports:
+  #            - 8080:8080
+  #        volumes:
+  #            - ./src:/usr/src/app/src # volume into /src on docker because node_modules would be overriden
+
+volumes:
+  postgres_budget_data:

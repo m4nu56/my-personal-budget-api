@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../app'); // our Node application
+const app = require('./app'); // our Node application
 
 const buildRandomString = () => {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

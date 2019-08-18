@@ -6,20 +6,21 @@ cache:
 
 before_script:
   - npm install
+  - docker-compose up -d
 
-#test:
-#  stage: test
-#  script:
-#    - CI=true npm test
-
-pages:
-  stage: deploy
+test:
+  stage: test
   script:
-    - npm run build
-    - rm -rf public
-    - mv build public
-  artifacts:
-    paths:
-      - public # GitLab pages serve from a 'public' directory
-  only:
-    - master # run on master branch
+    - npm test
+
+#pages:
+#  stage: deploy
+#  script:
+#    - npm run build
+#    - rm -rf public
+#    - mv build public
+#  artifacts:
+#    paths:
+#      - public # GitLab pages serve from a 'public' directory
+#  only:
+#    - master # run on master branch
