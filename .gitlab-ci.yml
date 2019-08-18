@@ -20,4 +20,4 @@ test:
     - PGPASSWORD=$POSTGRES_PASSWORD psql -U $POSTGRES_USER -h $POSTGRES_HOST -d $POSTGRES_DB -f sql/budget.sql
   script:
     - npm install
-    - npm run test
+    - DB_HOST=$POSTGRES_PASSWORD DB_PORT=5432 DB_NAME=$POSTGRES_DB DB_USER=$POSTGRES_USER DB_PASSWORD=$POSTGRES_PASSWORD npm run test
