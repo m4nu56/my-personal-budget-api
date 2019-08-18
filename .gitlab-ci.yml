@@ -13,6 +13,7 @@ test:
     - postgres:latest
   variables:
     # Configure postgres service (https://hub.docker.com/_/postgres/)
+    POSTGRES_HOST: postgres
     POSTGRES_DB: budget
     POSTGRES_USER: budget
     POSTGRES_PASSWORD: budget
