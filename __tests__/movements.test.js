@@ -1,4 +1,5 @@
-const {buildRandomString} = require('../testUtils');
+const {endPool} = require('../queries/db-config');
+const {buildRandomString, post} = require('../testUtils');
 const {createRandomCategory} = require('./categories.test');
 const request = require('supertest');
 const moment = require('moment');
@@ -23,14 +24,23 @@ async function deleteMovement (id) {
     await request(app).delete(`/movements/${id}`).expect(200);
 }
 
+beforeAll(done => {
+    // Asynchronous task
+    createRandomMovement().then(m => console.log(`Movement created with id ${m.id}`));
+    done();
+});
+afterAll(done => {
+    endPool();
+    done();
+});
+
+
 describe('Movements', () => {
     it('succeeds list of movements', async () => {
-        const {id} = await createRandomMovement();
         const response = await request(app).get(`/movements`).expect(200);
         let body = response.body;
         expect(body.length).toBeGreaterThan(1);
         expect(body[0].category.name).toBeDefined();
-        await deleteMovement(id);
     });
     it('creates and deletes a movement', async () => {
         const {id} = await createRandomMovement();
@@ -45,6 +55,7 @@ describe('Movements', () => {
     });
     it('test parsing date', () => {
         let date = moment('2019-02-04T00:00:00+01:00');
+        date.locale('fr');
         expect(date.isValid()).toBeTruthy();
         expect(date.format('DD')).toBe('04');
         expect(date.format('D')).toBe('4');
@@ -53,11 +64,3 @@ describe('Movements', () => {
     });
 });
 
-// a helper function to make a POST request
-function post (url, body) {
-    const httpRequest = request(app).post(url);
-    httpRequest.send(body);
-    httpRequest.set('Accept', 'application/json');
-    httpRequest.set('Origin', 'http://localhost:3000');
-    return httpRequest;
-}

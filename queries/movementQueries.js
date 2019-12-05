@@ -1,15 +1,5 @@
 const moment = require('moment');
-const dotenv = require('dotenv');
-dotenv.config();
-
-const Pool = require('pg').Pool;
-const pool = new Pool({
-                          user: process.env.DB_USER,
-                          host: process.env.DB_HOST,
-                          database: process.env.DB_NAME,
-                          password: process.env.DB_PASSWORD,
-                          port: process.env.DB_PORT
-                      });
+const {getPool} = require('./db-config');
 
 function buildQueryGetAllFromMovements () {
     return 'SELECT M.id::integer, year, month, date, amount, label, C.id::integer AS category_id, C.name as category_name, C.id_parent::integer AS category_id_parent '
@@ -19,15 +9,6 @@ function buildQueryGetAllFromMovements () {
 
 /**
  * Constructor pattern to create a new Movement()
- * @param id
- * @param year
- * @param month
- * @param date
- * @param amount
- * @param label
- * @param category_id
- * @param category_name
- * @param category_id_parent
  */
 function movement ({id, year, month, date, amount, label, category_id, category_name, category_id_parent}) {
     this.id = id;
@@ -52,7 +33,7 @@ const getMovements = (request, response) => {
         requestParameters = [request.query.category];
     }
     query += ' ORDER BY M.id ASC';
-    pool.query(query, requestParameters, (error, results) => {
+    getPool().query(query, requestParameters, (error, results) => {
         if (error) {
             throw error;
         }
@@ -65,7 +46,7 @@ const getMovements = (request, response) => {
 const getMovementById = (request, response) => {
     const id = parseInt(request.params.id);
 
-    pool.query(buildQueryGetAllFromMovements()
+    getPool().query(buildQueryGetAllFromMovements()
                + ' WHERE M.id = $1', [id], (error, results) => {
         if (error) {
             throw error;
@@ -77,7 +58,7 @@ const getMovementById = (request, response) => {
 const createMovement = (request, response) => {
     const {date, amount, label, category} = request.body;
 
-    pool.query('INSERT INTO t_movement (year, month, date, amount, label, id_category) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', [
+    getPool().query('INSERT INTO t_movement (year, month, date, amount, label, id_category) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', [
         Number(moment(date).format('YYYY')),
         Number(moment(date).format('M')),
         date,
@@ -86,7 +67,7 @@ const createMovement = (request, response) => {
         category.id
     ], (error, results) => {
         if (error) {
-            throw error;
+            response.status(400).json("Error creating a new movement: " + error.message());
         }
         const id = results.rows[0].id;
         response.status(201).json(`{"id": ${id}}`);
@@ -97,7 +78,7 @@ const updateMovement = (request, response) => {
     const id = parseInt(request.params.id);
     const {date, amount, label, category} = request.body;
 
-    pool.query('UPDATE t_movement SET year = $2, month = $3, date= $4, amount= $5, label= $6, id_category = $7 WHERE id = $1', [
+    getPool().query('UPDATE t_movement SET year = $2, month = $3, date= $4, amount= $5, label= $6, id_category = $7 WHERE id = $1', [
         id,
         moment(date, 'X').format('DD'),
         moment(date, 'X').format('MM'),
@@ -107,7 +88,7 @@ const updateMovement = (request, response) => {
         category.id
     ], (error, results) => {
         if (error) {
-            throw error;
+            response.status(400).json("Error updating a movement: " + error.message());
         }
         response.status(200).send(`{"id": ${id}}`);
     });
@@ -120,9 +101,9 @@ const deleteMovement = (request, response) => {
         return;
     }
 
-    pool.query('DELETE FROM t_movement WHERE id = $1', [id], (error, results) => {
+    getPool().query('DELETE FROM t_movement WHERE id = $1', [id], (error, results) => {
         if (error) {
-            throw error;
+            response.status(400).json("Error deleting a new movement: " + error.message());
         }
         response.status(200).send(`{"id": ${id}}`);
     });
@@ -139,7 +120,7 @@ const analyzeMovementByMonthByCategory = (request, response) => {
                   + 'group by year, month, id_category\n'
                   + 'order by year, month, id_category\n';
 
-    return pool.query(query);
+    return getPool().query(query);
 };
 
 module.exports = {

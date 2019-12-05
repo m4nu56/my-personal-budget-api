@@ -1,6 +1,7 @@
 const {post, buildRandomString} = require('../testUtils');
 const request = require('supertest');
 const app = require('../app'); // our Node application
+const {endPool} = require('../queries/db-config');
 
 const categoryRandom = () => {
     return {
@@ -16,6 +17,17 @@ async function createRandomCategory() {
 module.exports = {
     createRandomCategory
 };
+
+beforeAll(done => {
+    // Asynchronous task
+    createRandomCategory().then(m => console.log(`Category created with id ${m.id}`));
+    done();
+});
+afterAll(done => {
+    endPool();
+    done();
+});
+
 
 describe('Categories', () => {
     it('succeeds list of categories', async () => {

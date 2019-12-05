@@ -1,5 +1,19 @@
 const request = require('supertest');
-const app = require('../app'); // our Node application
+const {endPool} = require('../queries/db-config');
+const http = require('http');
+
+let app, server;
+
+beforeAll(done => {
+    app = require('../app');
+    server = http.createServer(app);
+    server.listen(done);
+});
+
+afterAll(done => {
+    endPool();
+    server.close(done);
+});
 
 describe('Analyze Movements', () => {
     it('succeeds list of analyze movements', async () => {
@@ -14,7 +28,7 @@ describe('Analyze Movements', () => {
         const response = await request(app).get(`/analyze/summary`).expect(200);
         let summary = JSON.parse(response.body);
         expect(summary.length).toBeGreaterThan(1);
-        summary.forEach(categoryEntry => console.log(categoryEntry[1]))
+        // summary.forEach(categoryEntry => console.log(categoryEntry[1]))
     });
 });
 
