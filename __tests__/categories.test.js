@@ -1,6 +1,7 @@
-const {post, buildRandomString} = require('./utils');
+const {post, buildRandomString} = require('../testUtils');
 const request = require('supertest');
 const app = require('../app'); // our Node application
+const {endPool} = require('../queries/db-config');
 
 const categoryRandom = () => {
     return {
@@ -17,12 +18,22 @@ module.exports = {
     createRandomCategory
 };
 
+beforeAll(done => {
+    // Asynchronous task
+    createRandomCategory().then(m => console.log(`Category created with id ${m.id}`));
+    done();
+});
+afterAll(done => {
+    endPool();
+    done();
+});
+
+
 describe('Categories', () => {
     it('succeeds list of categories', async () => {
         const categoryId = await createRandomCategory();
 
         const response2 = await request(app).get(`/categories`).expect(200);
-        console.log(response2.body);
         expect(response2.body.length).toBeGreaterThan(1);
 
         await request(app).delete(`/categories/${categoryId}`).expect(200);
@@ -34,7 +45,6 @@ describe('Categories', () => {
         expect(body.id).toBeGreaterThan(0);
 
         const response2 = await request(app).get(`/categories/${body.id}`).expect(200);
-        console.log(response2.body);
         expect(parseInt(response2.body[0].id)).toEqual(body.id);
 
         await request(app).delete(`/categories/${body.id}`).expect(200);
