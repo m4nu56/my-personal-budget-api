@@ -2,17 +2,19 @@ const dotenv = require('dotenv');
 dotenv.config();
 const Pool = require('pg').Pool;
 
+// const postgresConfig = {
+//     user: process.env.DB_USER,
+//     host: process.env.DB_HOST,
+//     database: process.env.DB_NAME,
+//     password: process.env.DB_PASSWORD,
+//     port: process.env.DB_PORT,
+//     connectionTimeoutMillis: 0,
+//     idleTimeoutMillis: 10000,
+//     max: 10
+// };
 const postgresConfig = {
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-
-    connectionTimeoutMillis: 0,
-    idleTimeoutMillis: 10000,
-    max: 10
-
+  connectionString: process.env.DATABASE_URL,
+  ssl: true
 };
 console.log(postgresConfig);
 
