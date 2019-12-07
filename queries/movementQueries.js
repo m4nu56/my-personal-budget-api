@@ -1,13 +1,11 @@
 const moment = require('moment');
 
 const Pool = require('pg').Pool;
+
 const pool = new Pool({
-                          user: 'postgres',
-                          host: 'localhost',
-                          database: 'budget',
-                          password: 'MxM64B7FEM8ReBigg1',
-                          port: 5439
-                      });
+  connectionString: process.env.DATABASE_URL,
+  ssl: true
+});
 
 function buildQueryGetAllFromMovements () {
     return 'SELECT M.id::integer, year, month, date, amount, label, C.id::integer AS category_id, C.name as category_name, C.id_parent::integer AS category_id_parent '
