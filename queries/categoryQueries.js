@@ -38,7 +38,7 @@ const deleteCategory = (request, response) => {
 
     getPool().query('DELETE FROM t_category WHERE id = $1', [id], (error, results) => {
         if (error) {
-            response.status(400).send(`Error deleting category ${error.message()}`);
+            response.status(400).send(`Error deleting category ${error.message}`);
         }
         response.status(200).json({id: id});
     });
@@ -54,7 +54,7 @@ const updateCategory = (request, response) => {
         parentId
     ], (error, results) => {
         if (error) {
-            response.status(400).json("Error updating a category: " + error.message());
+            response.status(400).json("Error updating a category: " + error.message);
             return;
         }
         response.status(200).json({id: id});
@@ -66,7 +66,7 @@ const getCategoryById = (request, response) => {
 
     getPool().query('SELECT id::integer, name, id_parent::integer FROM t_category WHERE id = $1', [id], (error, results) => {
         if (error) {
-            response.status(400).json(`Error finding a category with ID ${id}: ${error.message()}`);
+            response.status(400).json(`Error finding a category with ID ${id}: ${error.message}`);
             return;
         }
         if (results.rows.length === 0) {

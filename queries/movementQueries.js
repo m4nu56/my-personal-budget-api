@@ -31,7 +31,7 @@ const getMovements = (request, response) => {
     query += ' ORDER BY M.id ASC';
     getPool().query(query, requestParameters, (error, results) => {
         if (error) {
-            response.status(400).json(`Error finding movements: ${error.message()}`);
+            response.status(400).json(`Error finding movements: ${error.message}`);
             return;
         }
         response.status(200).json({
@@ -47,7 +47,7 @@ const getMovementById = (request, response) => {
     getPool().query(buildQueryGetAllFromMovements()
                + ' WHERE M.id = $1', [id], (error, results) => {
         if (error) {
-            response.status(400).json(`Error finding a movement with ID ${id}: ${error.message()}`);
+            response.status(400).json(`Error finding a movement with ID ${id}: ${error.message}`);
             return;
         }
         if (results.rows.length === 0) {
@@ -71,7 +71,7 @@ const createMovement = (request, response) => {
 
     ], (error, results) => {
         if (error) {
-            response.status(400).json("Error creating a new movement: " + error.message());
+            response.status(400).json("Error creating a new movement: " + error.message);
             return;
         }
         response.status(201).json(results.rows[0]);
@@ -92,7 +92,7 @@ const updateMovement = (request, response) => {
         category_id
     ], (error, results) => {
         if (error) {
-            response.status(400).json("Error updating a movement: " + error.message());
+            response.status(400).json("Error updating a movement: " + error.message);
             return;
         }
         response.status(200).json({id: id});
@@ -108,7 +108,7 @@ const deleteMovement = (request, response) => {
 
     getPool().query('DELETE FROM t_movement WHERE id = $1', [id], (error, results) => {
         if (error) {
-            response.status(400).json("Error deleting a new movement: " + error.message());
+            response.status(400).json("Error deleting a new movement: " + error.message);
             return;
         }
         response.status(200).json({id: id});
