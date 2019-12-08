@@ -6,12 +6,16 @@ const getCategories = (request, response) => {
         if (error) {
             throw error;
         }
-        response.status(200).json(results.rows);
+        response.status(200).json({
+                                      total: results.rows.length,
+                                      data: results.rows
+                                  });
     });
 };
 
 const createCategory = (request, response) => {
     const {name, parentId} = request.body;
+    console.log(request.body)
 
     getPool().query('INSERT INTO t_category (name, id_parent) VALUES ($1, $2) RETURNING id', [
         name,
@@ -21,7 +25,7 @@ const createCategory = (request, response) => {
             response.status(400).send();
             return;
         }
-        response.status(201).json(`{"id": ${results.rows[0].id}}`);
+        response.status(200).json({id: results.rows[0].id});
     });
 };
 
@@ -36,7 +40,7 @@ const deleteCategory = (request, response) => {
         if (error) {
             response.status(400).send(`Error deleting category ${error.message()}`);
         }
-        response.status(200).send(`{"id": ${id}}`);
+        response.status(200).json({id: id});
     });
 };
 
@@ -50,10 +54,10 @@ const updateCategory = (request, response) => {
         parentId
     ], (error, results) => {
         if (error) {
-            response.status(400).send();
-            throw error;
+            response.status(400).json("Error updating a category: " + error.message());
+            return;
         }
-        response.status(200).send(`{"id": ${id}}`);
+        response.status(200).json({id: id});
     });
 };
 
@@ -62,10 +66,14 @@ const getCategoryById = (request, response) => {
 
     getPool().query('SELECT id::integer, name, id_parent::integer FROM t_category WHERE id = $1', [id], (error, results) => {
         if (error) {
-            response.status(400).send();
-            throw error;
+            response.status(400).json(`Error finding a category with ID ${id}: ${error.message()}`);
+            return;
         }
-        response.status(200).json(results.rows);
+        if (results.rows.length === 0) {
+            response.status(400).json(`Error finding a category with ID ${id}`);
+            return;
+        }
+        response.status(200).json(results.rows[0]);
     });
 };
 

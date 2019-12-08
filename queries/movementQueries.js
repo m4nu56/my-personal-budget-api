@@ -17,11 +17,7 @@ function movement ({id, year, month, date, amount, label, category_id, category_
     this.date = date;
     this.amount = amount;
     this.label = label;
-    this.category = {
-        id: category_id,
-        name: category_name,
-        id_parent: category_id_parent
-    };
+    this.category_id = category_id;
 }
 
 const getMovements = (request, response) => {
@@ -35,11 +31,13 @@ const getMovements = (request, response) => {
     query += ' ORDER BY M.id ASC';
     getPool().query(query, requestParameters, (error, results) => {
         if (error) {
-            throw error;
+            response.status(400).json(`Error finding movements: ${error.message()}`);
+            return;
         }
-        let movements = [];
-        results.rows.forEach(m => movements.push(new movement(m)));
-        response.status(200).json(movements);
+        response.status(200).json({
+                                      total: results.rows.length,
+                                      data: results.rows.map(m => new movement(m))
+                                  });
     });
 };
 
@@ -49,14 +47,19 @@ const getMovementById = (request, response) => {
     getPool().query(buildQueryGetAllFromMovements()
                + ' WHERE M.id = $1', [id], (error, results) => {
         if (error) {
-            throw error;
+            response.status(400).json(`Error finding a movement with ID ${id}: ${error.message()}`);
+            return;
+        }
+        if (results.rows.length === 0) {
+            response.status(400).json(`Error finding a movement with ID ${id}`);
+            return;
         }
         response.status(200).json(new movement(results.rows[0]));
     });
 };
 
 const createMovement = (request, response) => {
-    const {date, amount, label, category} = request.body;
+    const {date, amount, label, category_id} = request.body;
 
     getPool().query('INSERT INTO t_movement (year, month, date, amount, label, id_category) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', [
         Number(moment(date).format('YYYY')),
@@ -64,19 +67,20 @@ const createMovement = (request, response) => {
         date,
         amount,
         label,
-        category.id
+        category_id
+
     ], (error, results) => {
         if (error) {
             response.status(400).json("Error creating a new movement: " + error.message());
+            return;
         }
-        const id = results.rows[0].id;
-        response.status(201).json(`{"id": ${id}}`);
+        response.status(201).json(results.rows[0]);
     });
 };
 
 const updateMovement = (request, response) => {
     const id = parseInt(request.params.id);
-    const {date, amount, label, category} = request.body;
+    const {date, amount, label, category_id} = request.body;
 
     getPool().query('UPDATE t_movement SET year = $2, month = $3, date= $4, amount= $5, label= $6, id_category = $7 WHERE id = $1', [
         id,
@@ -85,12 +89,13 @@ const updateMovement = (request, response) => {
         date,
         amount,
         label,
-        category.id
+        category_id
     ], (error, results) => {
         if (error) {
             response.status(400).json("Error updating a movement: " + error.message());
+            return;
         }
-        response.status(200).send(`{"id": ${id}}`);
+        response.status(200).json({id: id});
     });
 };
 
@@ -104,8 +109,9 @@ const deleteMovement = (request, response) => {
     getPool().query('DELETE FROM t_movement WHERE id = $1', [id], (error, results) => {
         if (error) {
             response.status(400).json("Error deleting a new movement: " + error.message());
+            return;
         }
-        response.status(200).send(`{"id": ${id}}`);
+        response.status(200).json({id: id});
     });
 };
 
