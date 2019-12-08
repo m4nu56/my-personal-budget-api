@@ -36,5 +36,5 @@
         "node": "10.17.0",
         "npm": "6.11.3"
     },
-    "heroku-postbuild": "npm install --production && cd client && npm install && npm run build"
+    "heroku-postbuild": "npm install --production"
 }

@@ -14,7 +14,7 @@ const Pool = require('pg').Pool;
 // };
 const postgresConfig = {
   connectionString: process.env.DATABASE_URL,
-  ssl: true
+  ssl: process.env.DATABASE_SSL ? process.env.DATABASE_SSL === "true" : true
 };
 console.log(postgresConfig);
 
