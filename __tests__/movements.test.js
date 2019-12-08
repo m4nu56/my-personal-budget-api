@@ -37,10 +37,10 @@ afterAll(done => {
 
 describe('Movements', () => {
     it('succeeds list of movements', async () => {
-        const response = await request(app).get(`/movements`).expect(200);
-        let body = response.body;
-        expect(body.length).toBeGreaterThan(1);
-        expect(body[0].category.name).toBeDefined();
+        const {body} = await request(app).get(`/movements`).expect(200);
+        expect(body.total).toBeGreaterThan(1);
+        expect(body.data.length).toBeGreaterThan(1);
+        expect(body.data[0].category.name).toBeDefined();
     });
     it('creates and deletes a movement', async () => {
         const {id} = await createRandomMovement();

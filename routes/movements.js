@@ -6,6 +6,6 @@ router.get('/', db.getMovements);
 router.get('/:id', db.getMovementById);
 router.post('/', db.createMovement);
 router.delete('/:id', db.deleteMovement);
-router.put('/:id', db.updateMovement);
+router.patch('/:id', db.updateMovement);
 
 module.exports = router;
