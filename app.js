@@ -32,7 +32,7 @@ app.use(
     })
 );
 
-app.use('/', indexRouter);
+//app.use('/', indexRouter);
 app.use('/movements', mouvementsRouter);
 app.use('/analyze', analyzeRouter);
 app.use('/categories', categoriesRouter);
