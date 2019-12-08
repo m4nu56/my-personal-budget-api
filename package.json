@@ -3,8 +3,10 @@
     "version": "0.0.0",
     "private": false,
     "scripts": {
-        "start": "nodemon ./bin/www",
-        "test": "NODE_ENV=test jest --detectOpenHandles"
+        "dev": "nodemon ./bin/www",
+        "start": "node ./bin/www",
+        "test": "NODE_ENV=test jest --detectOpenHandles",
+        "heroku-postbuild": "npm install --production"
     },
     "dependencies": {
         "body-parser": "^1.19.0",
@@ -35,6 +37,5 @@
     "engines": {
         "node": "10.17.0",
         "npm": "6.11.3"
-    },
-    "heroku-postbuild": "npm install --production"
+    }
 }
