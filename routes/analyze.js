@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.get('/', async (request, response) => {
     try {
-        const result = await db.analyzeMovementByMonthByCategory(request, response);
+        const result = await db.analyzeMovementByMonthByCategory();
         response.status(200).send(result.rows);
     } catch (e) {
         throw e;
@@ -13,19 +13,26 @@ router.get('/', async (request, response) => {
 
 router.get('/summary', async (request, response) => {
     try {
-        const result = await db.analyzeMovementByMonthByCategory(request);
+        const result = await db.analyzeMovementByMonthByCategory();
 
-        let summary = new Map();
+        let summary = [];
         result.rows.forEach(row => {
 
-            if (!summary.has(row.id_category)) {
-                summary.set(row.id_category, []);
+            if (!summary.find(s => s.category === row.id_category)) {
+                summary.push({
+                    category: row.id_category,
+                    data: []
+                });
             }
-            summary.get(row.id_category).push(row);
+            summary
+            .find(s => s.category === row.id_category)
+            .data
+            .push(row);
         });
 
-        let body = JSON.stringify(Array.from(summary.entries()));
-        response.status(200).json(body);
+        // let body = JSON.stringify(Array.from(summary.entries()));
+        console.log(summary);
+        response.status(200).json(summary);
 
     } catch (e) {
         throw e;
