@@ -1,8 +1,9 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import routes from '../api';
 import config from '../config';
+
 export default ({ app }: { app: express.Application }) => {
   /**
    * Health Check endpoints
@@ -47,7 +48,7 @@ export default ({ app }: { app: express.Application }) => {
   });
 
   /// error handlers
-  app.use((err, req, res, next) => {
+  app.use((err, req: Request, res: Response, next: NextFunction) => {
     /**
      * Handle 401 thrown by express-jwt library
      */
@@ -59,7 +60,7 @@ export default ({ app }: { app: express.Application }) => {
     }
     return next(err);
   });
-  app.use((err, req, res, next) => {
+  app.use((err: Error, req: Request, res: Response) => {
     res.status(err.status || 500);
     res.json({
       errors: {

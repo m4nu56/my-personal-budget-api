@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import {analyzeMovementByMonthByCategory} from '../../services/movementQueries';
+import { analyzeMovementByMonthByCategory } from '../../services/movementQueries';
 const route = Router();
 
 export default (app: Router) => {
