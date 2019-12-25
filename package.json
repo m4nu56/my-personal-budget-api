@@ -8,6 +8,7 @@
     "start": "nodemon",
     "inspect": "nodemon --inspect src/app.ts",
     "test": "jest",
+    "test:integration": "newman run integration-tests/postman_collection.json --environment integration-tests/localhost.json",
     "lint": "npm run lint:js ",
     "lint:eslint": "eslint --ignore-path .gitignore --ext .ts",
     "lint:js": "npm run lint:eslint src/",
@@ -40,8 +41,8 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@types/faker": "^4.1.8",
     "@types/express": "^4.17.0",
+    "@types/faker": "^4.1.8",
     "@types/jest": "^24.0.15",
     "@types/lodash": "^4.14.118",
     "@types/node": "^10.14.8",
@@ -53,6 +54,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "faker": "^4.1.0",
     "jest": "^24.1.0",
+    "newman": "^4.5.7",
     "prettier": "^1.17.0",
     "supertest": "^4.0.2",
     "ts-jest": "^24.0.0",

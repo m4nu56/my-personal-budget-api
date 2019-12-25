@@ -1,0 +1,24 @@
+{
+	"id": "a106e7cb-4354-4a96-af97-961c2547e33c",
+	"name": "localhost",
+	"values": [
+		{
+			"key": "budget-api",
+			"value": "http://localhost:8084",
+			"enabled": true
+		},
+		{
+			"key": "movementOk",
+			"value": false,
+			"enabled": true
+		},
+		{
+			"key": "categoryOk",
+			"value": false,
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2019-12-25T21:01:21.840Z",
+	"_postman_exported_using": "Postman/7.7.3"
+}

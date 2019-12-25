@@ -1,0 +1,544 @@
+{
+	"info": {
+		"_postman_id": "0351d302-51be-4cdd-a411-0cf0f327395e",
+		"name": "Budget",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "categories",
+			"item": [
+				{
+					"name": "create category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e5e430b9-dd7e-4073-8657-392e346d276f",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"API returns the created category\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"categoryId\", jsonData.id);",
+									"    pm.expect(jsonData.id).to.be.a('number');",
+									"    pm.environment.set(\"categoryName\", jsonData.name);",
+									"    pm.expect(jsonData.parentId).to.be.null;",
+									"});",
+									"",
+									"pm.environment.set('movementOk', false);",
+									"const categoryOk = pm.environment.get('categoryOk')",
+									"if(categoryOk){",
+									"    postman.setNextRequest('create movement')",
+									"} else {",
+									"    postman.setNextRequest('get categories') ",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "795949cd-2900-47d7-97b2-cb89369a568e",
+								"exec": [
+									"pm.environment.set(\"categoryName\", \"Test Category #{{$randomInt}}\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"{{categoryName}}\"\n}"
+						},
+						"url": {
+							"raw": "{{budget-api}}/categories",
+							"host": [
+								"{{budget-api}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f10f8d2a-c9d7-4ab9-af56-b2f0f9599892",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"get categories returns the created category\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.be.empty;",
+									"    const categoryId = pm.environment.get('categoryId');",
+									"    const category = jsonData.filter(c => c.id === categoryId);",
+									"    pm.expect(category).to.not.be.null;",
+									"});",
+									"",
+									"postman.setNextRequest('categories/id')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{budget-api}}/categories",
+							"host": [
+								"{{budget-api}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "categories/id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "32c428a7-75b8-402d-be57-f63888544891",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"returns the asked category\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    const categoryId = pm.environment.get('categoryId');",
+									"    pm.expect(jsonData.id).to.eql(categoryId)",
+									"    const categoryName = pm.environment.get('categoryName');",
+									"    pm.expect(jsonData.name).to.eql(categoryName)",
+									"});",
+									"",
+									"postman.setNextRequest('patch categories/id')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{budget-api}}/categories/{{categoryId}}",
+							"host": [
+								"{{budget-api}}"
+							],
+							"path": [
+								"categories",
+								"{{categoryId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch categories/id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "48da8b6d-403f-4468-9ae1-0b213d8d2632",
+								"exec": [
+									"const categoryName = pm.environment.get('categoryName')",
+									"pm.environment.set('categoryName', `${categoryName} *`)"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "5b241b14-3d96-4364-8ed4-f417d44f4822",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"returns the modified category\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    const categoryId = pm.environment.get('categoryId');",
+									"    pm.expect(jsonData.id).to.eql(categoryId)",
+									"    const categoryName = pm.environment.get('categoryName');",
+									"    console.log(`new categoryName= ${categoryName}`)",
+									"    pm.expect(jsonData.name).to.eql(categoryName)",
+									"});",
+									"",
+									"postman.setNextRequest('delete categories/id')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"{{categoryName}}\"\n}"
+						},
+						"url": {
+							"raw": "{{budget-api}}/categories/{{categoryId}}",
+							"host": [
+								"{{budget-api}}"
+							],
+							"path": [
+								"categories",
+								"{{categoryId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete categories/id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "434ffed6-988b-4ae7-9f07-c2e919931678",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const movementOk = pm.environment.get('movementOk');",
+									"if(!movementOk){",
+									"    pm.environment.set('categoryOk', true);",
+									"    postman.setNextRequest('create category');",
+									"} else {",
+									"    postman.setNextRequest('analyze');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{budget-api}}/categories/{{categoryId}}",
+							"host": [
+								"{{budget-api}}"
+							],
+							"path": [
+								"categories",
+								"{{categoryId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "movements",
+			"item": [
+				{
+					"name": "create movement",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ccee7813-d32b-4482-82cf-97781ce46ab1",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"returns the created movement\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    const categoryId = pm.environment.get('categoryId');",
+									"    pm.expect(jsonData.categoryId).to.eql(categoryId)",
+									"    pm.environment.set('movementId', jsonData.id);",
+									"});",
+									"",
+									"postman.setNextRequest('get movements')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"date\":\"2019-07-02\",\n\t\"amount\": 350,\n\t\"label\": \"holidays\",\n\t\"id_category\": {{categoryId}}\n}"
+						},
+						"url": {
+							"raw": "{{budget-api}}/movements",
+							"host": [
+								"{{budget-api}}"
+							],
+							"path": [
+								"movements"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get movements",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c965f468-f818-4102-aaf4-3520ae631457",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"get movements returns the created movement\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.not.be.empty;",
+									"    const movementId = pm.environment.get('movementId');",
+									"    const movement = jsonData.filter(c => c.id === movementId);",
+									"    pm.expect(movement).to.not.be.null;",
+									"});",
+									"",
+									"postman.setNextRequest('movements/id')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{budget-api}}/movements",
+							"host": [
+								"{{budget-api}}"
+							],
+							"path": [
+								"movements"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "movements/id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d948c028-f9af-4fa2-8f6d-5ea710e28a25",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"returns the asked movement\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    const movementId = pm.environment.get('movementId');",
+									"    pm.expect(jsonData.id).to.eql(movementId)",
+									"    const categoryId = pm.environment.get('categoryId');",
+									"    pm.expect(jsonData.categoryId).to.eql(categoryId)",
+									"});",
+									"",
+									"postman.setNextRequest('patch movements/id')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{budget-api}}/movements/{{movementId}}",
+							"host": [
+								"{{budget-api}}"
+							],
+							"path": [
+								"movements",
+								"{{movementId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch movements/id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "885db288-32f9-4e88-8a93-b0b54a6544c3",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"returns the modified movement\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    const movementId = pm.environment.get('movementId');",
+									"    pm.expect(jsonData.id).to.eql(movementId)",
+									"    pm.expect(jsonData.label).to.eql(\"PRAGUE2019\")",
+									"});",
+									"",
+									"postman.setNextRequest('delete movements/id')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": " {\n        \"year\": 1,\n        \"month\": 1,\n        \"date\": \"2019-07-01T22:00:00.000Z\",\n        \"amount\": 500,\n        \"label\": \"PRAGUE2019\",\n        \"categoryId\": {{categoryId}}\n    }"
+						},
+						"url": {
+							"raw": "{{budget-api}}/movements/{{movementId}}",
+							"host": [
+								"{{budget-api}}"
+							],
+							"path": [
+								"movements",
+								"{{movementId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete movements/id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "df582211-5d63-4c22-879d-1cc96a50e3eb",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.environment.set('movementOk', true)",
+									"postman.setNextRequest('delete categories/id')"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{budget-api}}/movements/{{movementId}}",
+							"host": [
+								"{{budget-api}}"
+							],
+							"path": [
+								"movements",
+								"{{movementId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "analyze",
+			"item": [
+				{
+					"name": "analyze",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{budget-api}}/analyze",
+							"host": [
+								"{{budget-api}}"
+							],
+							"path": [
+								"analyze"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "analyze/summary",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{budget-api}}/analyze/summary",
+							"host": [
+								"{{budget-api}}"
+							],
+							"path": [
+								"analyze",
+								"summary"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
