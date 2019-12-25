@@ -12,7 +12,7 @@ export default class MovementService {
     try {
       return Movement.findAll();
     } catch (e) {
-      this.logger.error('getMovements()', e);
+      this.logger.error(`getMovements() ${e}`);
       throw e;
     }
   }
@@ -55,7 +55,7 @@ export default class MovementService {
         },
         { returning: true, where: { id: id } },
       );
-      return this.getMovementById(movement.id);
+      return this.getMovementById(id);
     } catch (e) {
       this.logger.error(`update movement with ${movement} ${e}`);
       throw e;

@@ -4,7 +4,7 @@ import config from '../config';
 export class Category extends Model {
   public id!: number;
   public name: string;
-  public idParent!: number;
+  public parentId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -14,7 +14,7 @@ const sequelize = new Sequelize(config.databaseURL);
 Category.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -23,7 +23,7 @@ Category.init(
       allowNull: false,
     },
     parentId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       field: 'id_parent',
     },
   },
