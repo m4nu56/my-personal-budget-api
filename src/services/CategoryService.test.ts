@@ -5,7 +5,7 @@ import CategoryService from './CategoryService';
 
 Container.set('logger', LoggerInstance);
 
-async function createCategory(name = faker.lorem.words(3), parentId?: number) {
+export async function createCategory(name = faker.lorem.words(3), parentId?: number) {
   const categoryService = Container.get(CategoryService);
   return categoryService.create({
     name: name,
@@ -16,7 +16,8 @@ async function createCategory(name = faker.lorem.words(3), parentId?: number) {
 describe('CategoryService', () => {
   test('get all categories', async () => {
     await createCategory();
-    const categories = await Container.get(CategoryService).getCategories();
+    const paginatedResult = await Container.get(CategoryService).getCategories();
+    const categories = paginatedResult.data;
     expect(categories.length > 0).toBeTruthy();
   });
 

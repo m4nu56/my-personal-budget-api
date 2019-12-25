@@ -2,15 +2,17 @@ import Movement from '../models/Movement';
 import { Inject, Service } from 'typedi';
 import { Category } from '../models/Category';
 import { Logger } from 'winston';
+import PaginatedResult from '../types/PaginatedResult';
 
 @Service()
 export default class MovementService {
   @Inject('logger')
   logger: Logger;
 
-  getMovements(): Promise<Movement[]> {
+  async getMovements(): Promise<PaginatedResult> {
     try {
-      return Movement.findAll();
+      const movements = await Movement.findAll();
+      return new PaginatedResult(movements);
     } catch (e) {
       this.logger.error(`getMovements() ${e}`);
       throw e;

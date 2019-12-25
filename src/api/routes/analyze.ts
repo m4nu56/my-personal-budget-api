@@ -1,20 +1,20 @@
-import { Request, Response, Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import { analyzeMovementByMonthByCategory } from '../../services/movementQueries';
 const route = Router();
 
 export default (app: Router) => {
   app.use('/analyze', route);
 
-  route.get('/', async (request: Request, response: Response) => {
+  route.get('/', async (request: Request, response: Response, next: NextFunction) => {
     try {
       const result = await analyzeMovementByMonthByCategory();
       response.status(200).send(result.rows);
     } catch (e) {
-      throw e;
+      next(e);
     }
   });
 
-  route.get('/summary', async (request: Request, response: Response) => {
+  route.get('/summary', async (request: Request, response: Response, next: NextFunction) => {
     try {
       const result = await analyzeMovementByMonthByCategory();
 
@@ -33,7 +33,7 @@ export default (app: Router) => {
       console.log(summary);
       response.status(200).json(summary);
     } catch (e) {
-      throw e;
+      next(e);
     }
   });
 };

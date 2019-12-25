@@ -1,4 +1,4 @@
-import {getPool} from './db-config';
+import { getPool } from './db-config';
 
 /**
  * Retourne les totaux par année/mois/category de tous les mouvements en base

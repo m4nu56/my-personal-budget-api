@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { createMovement, deleteMovement, updateMovement } from '../../services/movementQueries';
 import MovementService from '../../services/MovementService';
 import { Container } from 'typedi';
 

@@ -1,15 +1,17 @@
 import { Inject, Service } from 'typedi';
 import { Logger } from 'winston';
 import { Category } from '../models/Category';
+import PaginatedResult from '../types/PaginatedResult';
 
 @Service()
 export default class CategoryService {
   @Inject('logger')
   logger: Logger;
 
-  getCategories(): Promise<Category[]> {
+  async getCategories(): Promise<PaginatedResult> {
     try {
-      return Category.findAll();
+      const categories = await Category.findAll();
+      return new PaginatedResult(categories);
     } catch (e) {
       this.logger.error(`getCategories() ${e}`);
       throw e;
