@@ -1,7 +1,7 @@
 import faker from 'faker';
 import { Container } from 'typedi';
-import LoggerInstance from '../loaders/logger';
-import CategoryService from './CategoryService';
+import LoggerInstance from '../../src/loaders/logger';
+import CategoryService from '../../src/services/CategoryService';
 
 Container.set('logger', LoggerInstance);
 

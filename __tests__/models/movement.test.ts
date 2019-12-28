@@ -1,5 +1,5 @@
-import Movement from './Movement';
-import { Category } from './Category';
+import Movement from '../../src/models/Movement';
+import { Category } from '../../src/models/Category';
 
 const buildRandomString = () => {
   return (

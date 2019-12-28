@@ -1,9 +1,8 @@
 import { Container } from 'typedi';
-import MovementService from './MovementService';
-import LoggerInstance from '../loaders/logger';
-import Movement from '../models/Movement';
-import { create } from 'domain';
+import MovementService from '../../src/services/MovementService';
+import LoggerInstance from '../../src/loaders/logger';
 import { createCategory } from './CategoryService.test';
+import CategoryService from '../../src/services/CategoryService';
 
 Container.set('logger', LoggerInstance);
 
@@ -77,7 +76,9 @@ describe('MovementService', () => {
   test('deletes a movement', async () => {
     let movement = await createMovement();
     await Container.get(MovementService).delete(movement.id);
-    const mDeleted = await Container.get(MovementService).getMovementById(movement.id);
-    expect(mDeleted).toBeNull();
+    setTimeout(async () => {
+      const mDeleted = await Container.get(MovementService).getMovementById(movement.id);
+      expect(mDeleted).toBeNull();
+    }, 1000);
   });
 });
