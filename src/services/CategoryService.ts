@@ -3,16 +3,18 @@ import { Logger } from 'winston';
 import { Category } from '../models/Category';
 import PaginatedResult from '../types/PaginatedResult';
 import Sequelize from 'sequelize';
+import Movement from '../models/Movement';
+import StandardService from './StandardService';
 
 @Service()
-export default class CategoryService {
+export default class CategoryService extends StandardService {
   @Inject('logger')
   logger: Logger;
 
-  async getCategories(): Promise<PaginatedResult> {
+  async getCategories({ page, pageSize }): Promise<PaginatedResult> {
     try {
-      const categories = await Category.findAll();
-      return new PaginatedResult(categories);
+      const { rows, count } = await Category.findAndCountAll({ ...this.paginate({ page, pageSize }) });
+      return new PaginatedResult(rows, count);
     } catch (e) {
       this.logger.error(`getCategories() ${e}`);
       throw e;

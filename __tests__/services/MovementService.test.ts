@@ -2,7 +2,6 @@ import { Container } from 'typedi';
 import MovementService from '../../src/services/MovementService';
 import LoggerInstance from '../../src/loaders/logger';
 import { createCategory } from './CategoryService.test';
-import CategoryService from '../../src/services/CategoryService';
 
 Container.set('logger', LoggerInstance);
 
@@ -22,11 +21,21 @@ async function createMovement() {
 }
 
 describe('MovementService', () => {
-  test('get all movements', async () => {
+  test('get first 1 movement', async () => {
     let m = await createMovement();
-    const paginatedResult = await Container.get(MovementService).getMovements();
+    const paginatedResult = await Container.get(MovementService).getMovements({ page: 1, pageSize: 1 });
     const movements = paginatedResult.data;
-    expect(movements.length > 0).toBeTruthy();
+    expect(movements.length).toEqual(1);
+  });
+
+  test('get movements from page 2', async () => {
+    await createMovement();
+    await createMovement();
+    await createMovement();
+    await createMovement();
+    const paginatedResult = await Container.get(MovementService).getMovements({ page: 2, pageSize: 2 });
+    const movements = paginatedResult.data;
+    expect(movements.length).toEqual(2);
   });
 
   test('get existing movement by id', async () => {

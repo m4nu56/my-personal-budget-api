@@ -9,7 +9,8 @@ export default (app: Router) => {
 
   route.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      let movements = await Container.get(MovementService).getMovements();
+      const { page, pageSize } = req.query;
+      let movements = await Container.get(MovementService).getMovements({ page, pageSize });
       return res.send(movements);
     } catch (e) {
       console.error(e);

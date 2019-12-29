@@ -12,7 +12,7 @@ Container.set(CategoryService, CategoryService);
 describe('ImportService', () => {
   test('import a csv', async () => {
     // const csv = 'type,part\nunicorn,horn\nrainbow,pink';
-    const filePath = path.join(__dirname, '../assets/bnp.csv');
+    const filePath = path.join(__dirname, '../assets/bnp_tests.csv');
     const csv = await fs.readFileSync(filePath).toString();
     let movements = await Container.get(ImportService).fromCsv(csv);
     expect(movements.length > 0).toBeTruthy();

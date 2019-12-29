@@ -2,8 +2,8 @@ export default class PaginatedResult {
   data: any[];
   total: number;
 
-  constructor(data: any[]) {
+  constructor(data: any[], total: number) {
     this.data = data;
-    this.total = data.length;
+    this.total = total;
   }
 }
