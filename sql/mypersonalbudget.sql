@@ -1,11 +1,3 @@
-CREATE SEQUENCE public.category_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -21,7 +13,9 @@ CREATE TABLE public.t_movement (
     date date,
     amount double precision,
     label character varying(500),
-    id_category bigint NOT NULL
+    id_category bigint NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -48,10 +42,21 @@ ALTER SEQUENCE public.movement_id_seq OWNED BY public.t_movement.id;
 -- Name: t_category; Type: TABLE; Schema: public; Owner: -
 --
 
+CREATE SEQUENCE public.category_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
 CREATE TABLE public.t_category (
     id bigint DEFAULT nextval('public.category_id_seq'::regclass) NOT NULL,
     name character varying(255),
     id_parent bigint,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     CONSTRAINT t_category_category_check CHECK ((name IS NOT NULL))
 );
 
