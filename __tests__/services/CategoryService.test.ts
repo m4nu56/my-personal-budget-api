@@ -70,4 +70,30 @@ describe('CategoryService', () => {
       expect(cDeleted).toBeNull();
     }, 1000);
   });
+
+  test('findCategoryByName with exact name', async () => {
+    const name = faker.lorem.words(3);
+    const category = await createCategory(name);
+    let c = await Container.get(CategoryService).findCategoryByName(name);
+    expect(c.id).toEqual(category.id);
+  });
+
+  test('findCategoryByName with same name bad case sensitive', async () => {
+    const name = faker.lorem.words(3);
+    const category = await createCategory(name);
+    let c = await Container.get(CategoryService).findCategoryByName(name.toUpperCase());
+    expect(c.id).toEqual(category.id);
+  });
+
+  test('findCategoryByName with name not found should return null', async () => {
+    let category = await Container.get(CategoryService).findCategoryByName('do not exists');
+    expect(category).toBeNull();
+  });
+
+  test('findCategoryByNameOrCreate with name not found should create a new category with this name', async () => {
+    const name = faker.lorem.words(3);
+    let category = await Container.get(CategoryService).findCategoryByNameOrCreate(name);
+    expect(category).not.toBeNull();
+    expect(category.name).toEqual(name);
+  });
 });
