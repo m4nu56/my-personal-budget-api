@@ -68,6 +68,18 @@ export default class CategoryService extends StandardService {
     }
   }
 
+  deleteAll(): void {
+    try {
+      Category.destroy({
+        where: {},
+        cascade: true,
+      });
+    } catch (e) {
+      this.logger.error(`delete all categories ${e}`);
+      throw e;
+    }
+  }
+
   findCategoryByName(name: string): Promise<Category> {
     try {
       return Category.findOne<Category>({

@@ -2,6 +2,7 @@ import { Container } from 'typedi';
 import MovementService from '../../src/services/MovementService';
 import LoggerInstance from '../../src/loaders/logger';
 import { createCategory } from './CategoryService.test';
+import CategoryService from '../../src/services/CategoryService';
 import moment = require('moment');
 
 Container.set('logger', LoggerInstance);
@@ -11,17 +12,27 @@ beforeAll(async () => {
   category = await createCategory();
 });
 
-async function createMovement(amount = 12, date = moment().format('YYYY-MM-DD'), label = 'toto') {
+afterEach(async () => {
+  await Container.get(MovementService).deleteRange(moment('1900-01-01').toDate(), moment('2900-01-01').toDate());
+  await Container.get(CategoryService).deleteAll();
+});
+
+async function createMovement(
+  amount = 12,
+  date = moment().format('YYYY-MM-DD'),
+  label = 'toto',
+  categoryId = category.id,
+) {
   let movementService = Container.get(MovementService);
   return await movementService.create({
     amount: amount,
     date: date,
     label: label,
-    categoryId: category.id,
+    categoryId: categoryId,
   });
 }
 
-describe('MovementService', () => {
+describe('Basic CRUD', () => {
   test('get first 1 movement', async () => {
     await createMovement();
     const paginatedResult = await Container.get(MovementService).getMovements({ page: 1, pageSize: 1 });
@@ -109,5 +120,74 @@ describe('MovementService', () => {
       const mDeleted = await Container.get(MovementService).getMovementById(movement.id);
       expect(mDeleted).toBeNull();
     }, 1000);
+  });
+});
+
+describe('Analyze', () => {
+  test('with only 1 category and one movement by month', async () => {
+    const categoryA = await createCategory();
+    await createMovement(100, '2020-01-01', 'label', categoryA.id);
+    await createMovement(100, '2020-02-01', 'label', categoryA.id);
+    await createMovement(100, '2020-03-01', 'label', categoryA.id);
+    let movementCategories = await Container.get(MovementService).analyzeMovementByMonthByCategory();
+    expect(movementCategories).toHaveLength(3);
+    movementCategories.forEach(value => {
+      expect(value.categoryId).toEqual(categoryA.id);
+      expect(value.year).toEqual(2020);
+      expect([1, 2, 3]).toContain(value.month);
+      expect(value.total).toEqual(100);
+    });
+  });
+
+  test('with 2 categories and one movement each month', async () => {
+    const categoryA = await createCategory();
+    await createMovement(100, '2020-01-01', 'labelA', categoryA.id);
+    await createMovement(100, '2020-02-01', 'labelA', categoryA.id);
+    await createMovement(100, '2020-03-01', 'labelA', categoryA.id);
+    const categoryB = await createCategory();
+    await createMovement(100, '2020-01-01', 'labelB', categoryB.id);
+    await createMovement(100, '2020-02-01', 'labelB', categoryB.id);
+    await createMovement(100, '2020-03-01', 'labelB', categoryB.id);
+    let movementCategories = await Container.get(MovementService).analyzeMovementByMonthByCategory();
+    expect(movementCategories).toHaveLength(6);
+    movementCategories.forEach(value => {
+      expect(value.total).toEqual(100);
+    });
+  });
+});
+
+describe('Analyse summary', () => {
+  test('Summary with 1 category and 1 movement each month', async () => {
+    const categoryA = await createCategory();
+    await createMovement(100, '2020-01-01', 'label', categoryA.id);
+    await createMovement(100, '2020-02-01', 'label', categoryA.id);
+    await createMovement(100, '2020-03-01', 'label', categoryA.id);
+    let movementCategories = await Container.get(MovementService).analyzeMovement();
+    expect(movementCategories).toHaveLength(1);
+    movementCategories[0].data.forEach(value => {
+      expect(value.categoryId).toEqual(categoryA.id);
+      expect(value.year).toEqual(2020);
+      expect([1, 2, 3]).toContain(value.month);
+      expect(value.total).toEqual(100);
+    });
+  });
+
+  test('with 2 categories and one movement each month', async () => {
+    const categoryA = await createCategory();
+    await createMovement(100, '2020-01-01', 'labelA', categoryA.id);
+    await createMovement(100, '2020-02-01', 'labelA', categoryA.id);
+    await createMovement(100, '2020-03-01', 'labelA', categoryA.id);
+    const categoryB = await createCategory();
+    await createMovement(100, '2020-01-01', 'labelB', categoryB.id);
+    await createMovement(100, '2020-02-01', 'labelB', categoryB.id);
+    await createMovement(100, '2020-03-01', 'labelB', categoryB.id);
+
+    let movementCategories = await Container.get(MovementService).analyzeMovement();
+    expect(movementCategories).toHaveLength(2);
+    movementCategories.forEach(value => {
+      value.data.forEach(value => {
+        expect(value.total).toEqual(100);
+      });
+    });
   });
 });

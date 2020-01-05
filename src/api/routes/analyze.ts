@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { analyzeMovementByMonthByCategory } from '../../services/movementQueries';
+import { Container } from 'typedi';
+import MovementService from '../../services/MovementService';
+
 const route = Router();
 
 export default (app: Router) => {
@@ -7,8 +9,8 @@ export default (app: Router) => {
 
   route.get('/', async (request: Request, response: Response, next: NextFunction) => {
     try {
-      const result = await analyzeMovementByMonthByCategory();
-      response.status(200).send(result.rows);
+      const movements = await Container.get(MovementService).analyzeMovementByMonthByCategory();
+      return response.status(200).send(movements);
     } catch (e) {
       next(e);
     }
@@ -16,22 +18,8 @@ export default (app: Router) => {
 
   route.get('/summary', async (request: Request, response: Response, next: NextFunction) => {
     try {
-      const result = await analyzeMovementByMonthByCategory();
-
-      let summary = [];
-      result.rows.forEach(row => {
-        if (!summary.find(s => s.category === row.id_category)) {
-          summary.push({
-            category: row.id_category,
-            data: [],
-          });
-        }
-        summary.find(s => s.category === row.id_category).data.push(row);
-      });
-
-      // let body = JSON.stringify(Array.from(summary.entries()));
-      console.log(summary);
-      response.status(200).json(summary);
+      const movements = await Container.get(MovementService).analyzeMovement();
+      return response.status(200).send(movements);
     } catch (e) {
       next(e);
     }

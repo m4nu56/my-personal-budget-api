@@ -6,7 +6,11 @@ import { Logger } from 'winston';
 import PaginatedResult from '../types/PaginatedResult';
 import StandardService from './core/StandardService';
 import { IPaginationProps } from './core/IPaginationProps';
-import Sequelize from 'sequelize';
+import { Op, QueryTypes, Sequelize } from 'sequelize';
+
+import { MovementCategoryMonth } from '../models/MovementCategoryMonth';
+import config from '../config';
+import _ from 'lodash';
 
 @Service()
 export default class MovementService extends StandardService {
@@ -85,8 +89,8 @@ export default class MovementService extends StandardService {
       Movement.destroy({
         where: {
           date: {
-            [Sequelize.Op.gte]: start,
-            [Sequelize.Op.lte]: end,
+            [Op.gte]: start,
+            [Op.lte]: end,
           },
         },
         cascade: true,
@@ -103,7 +107,7 @@ export default class MovementService extends StandardService {
         defaults: movement,
         where: {
           date: {
-            [Sequelize.Op.eq]: movement.date,
+            [Op.eq]: movement.date,
           },
           amount: movement.amount,
           label: movement.label,
@@ -122,5 +126,44 @@ export default class MovementService extends StandardService {
       this.logger.error(`findOrCreate(${movement}): ${e}`);
       throw e;
     }
+  }
+
+  async analyzeMovementByMonthByCategory(): Promise<MovementCategoryMonth[]> {
+    const sequelize = new Sequelize(config.database.url, config.database.options);
+
+    const movements = (await sequelize.query(
+      `select year, month, id_category as "categoryId", round(sum(amount)::numeric, 2)::numeric as total
+           from t_movement
+           group by year, month, id_category
+           order by year, month, id_category`,
+      {
+        type: QueryTypes.SELECT,
+        model: MovementCategoryMonth,
+        mapToModel: false,
+      },
+    )) as MovementCategoryMonth[];
+
+    // yeah.. had to add an awfull cast here to have my string total returned as number..
+    movements.forEach(movement => (movement.total = Number(movement.total)));
+
+    return movements;
+  }
+
+  async analyzeMovement(): Promise<any> {
+    const movements = await this.analyzeMovementByMonthByCategory();
+    // const dictionary = _.groupBy<MovementCategoryMonth>(movements, 'categoryId');
+
+    let summary = [];
+    movements.forEach(row => {
+      if (!summary.find(s => s.category === row.categoryId)) {
+        summary.push({
+          category: row.categoryId,
+          data: [],
+        });
+      }
+      summary.find(s => s.category === row.categoryId).data.push(row);
+    });
+
+    return summary;
   }
 }
