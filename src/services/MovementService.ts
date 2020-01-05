@@ -4,15 +4,16 @@ import { Category } from '../models/Category';
 import { Logger } from 'winston';
 import PaginatedResult from '../types/PaginatedResult';
 import StandardService from './core/StandardService';
+import { IPaginationProps } from './core/IPaginationProps';
 
 @Service()
 export default class MovementService extends StandardService {
   @Inject('logger')
   logger: Logger;
 
-  async getMovements({ page, pageSize, sort }): Promise<PaginatedResult> {
+  async getMovements(params: IPaginationProps): Promise<PaginatedResult> {
     try {
-      const { rows, count } = await Movement.findAndCountAll({ ...this.paginateAndSort({ page, pageSize, sort }) });
+      const { rows, count } = await Movement.findAndCountAll({ ...this.paginateAndSort(params) });
       return new PaginatedResult(rows, count);
     } catch (e) {
       this.logger.error(`getMovements() ${e}`);

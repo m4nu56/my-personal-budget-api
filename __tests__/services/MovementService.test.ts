@@ -22,7 +22,7 @@ async function createMovement() {
 
 describe('MovementService', () => {
   test('get first 1 movement', async () => {
-    let m = await createMovement();
+    await createMovement();
     const paginatedResult = await Container.get(MovementService).getMovements({ page: 1, pageSize: 1 });
     const movements = paginatedResult.data;
     expect(movements.length).toEqual(1);

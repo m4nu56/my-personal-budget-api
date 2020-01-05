@@ -4,15 +4,16 @@ import { Category } from '../models/Category';
 import PaginatedResult from '../types/PaginatedResult';
 import Sequelize from 'sequelize';
 import StandardService from './core/StandardService';
+import { IPaginationProps } from './core/IPaginationProps';
 
 @Service()
 export default class CategoryService extends StandardService {
   @Inject('logger')
   logger: Logger;
 
-  async getCategories({ page, pageSize, sort }): Promise<PaginatedResult> {
+  async getCategories(params: IPaginationProps): Promise<PaginatedResult> {
     try {
-      const { rows, count } = await Category.findAndCountAll({ ...this.paginateAndSort({ page, pageSize, sort }) });
+      const { rows, count } = await Category.findAndCountAll({ ...this.paginateAndSort(params) });
       return new PaginatedResult(rows, count);
     } catch (e) {
       this.logger.error(`getCategories() ${e}`);
