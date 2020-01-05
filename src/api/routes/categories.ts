@@ -9,8 +9,8 @@ export default (app: Router) => {
 
   route.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { page, pageSize } = req.query;
-      let categories = await Container.get(CategoryService).getCategories({ page, pageSize });
+      const { page = 1, pageSize = 100, sort } = req.query;
+      let categories = await Container.get(CategoryService).getCategories({ page, pageSize, sort });
       return res.send(categories);
     } catch (e) {
       console.error(e);

@@ -3,16 +3,16 @@ import { Inject, Service } from 'typedi';
 import { Category } from '../models/Category';
 import { Logger } from 'winston';
 import PaginatedResult from '../types/PaginatedResult';
-import StandardService from './StandardService';
+import StandardService from './core/StandardService';
 
 @Service()
 export default class MovementService extends StandardService {
   @Inject('logger')
   logger: Logger;
 
-  async getMovements({ page, pageSize }): Promise<PaginatedResult> {
+  async getMovements({ page, pageSize, sort }): Promise<PaginatedResult> {
     try {
-      const { rows, count } = await Movement.findAndCountAll({ ...this.paginate({ page, pageSize }) });
+      const { rows, count } = await Movement.findAndCountAll({ ...this.paginateAndSort({ page, pageSize, sort }) });
       return new PaginatedResult(rows, count);
     } catch (e) {
       this.logger.error(`getMovements() ${e}`);

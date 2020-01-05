@@ -16,7 +16,7 @@ export async function createCategory(name = faker.lorem.words(3), parentId?: num
 describe('CategoryService', () => {
   test('get all categories', async () => {
     await createCategory();
-    const paginatedResult = await Container.get(CategoryService).getCategories();
+    const paginatedResult = await Container.get(CategoryService).getCategories({ page: 1, pageSize: 5, sort: '-name' });
     const categories = paginatedResult.data;
     expect(categories.length > 0).toBeTruthy();
   });
