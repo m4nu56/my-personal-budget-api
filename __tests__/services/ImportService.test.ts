@@ -4,8 +4,13 @@ import ImportService from '../../src/services/ImportService';
 import fs from 'fs';
 import path from 'path';
 import moment = require('moment');
+import MovementService from '../../src/services/MovementService';
 
 Container.set('logger', LoggerInstance);
+
+afterAll(async () => {
+  await Container.get(MovementService).deleteRange(moment('1900-01-01').toDate(), moment('2900-01-01').toDate());
+});
 
 describe('ImportService', () => {
   test('import a csv', async () => {
@@ -25,6 +30,7 @@ describe('ImportService', () => {
       expect(moment(movement.date).isValid()).toBeTruthy();
       expect(typeof movement.label).toBe('string');
       expect(typeof movement.amount).toBe('number');
+      expect(typeof movement.categoryId).not.toBeNull();
     });
   }, 30000);
 });

@@ -6,6 +6,7 @@ import neatCsv from 'neat-csv';
 import moment from 'moment';
 import currencyFormatter from 'currency-formatter';
 import CategoryService from './CategoryService';
+import MovementService from './MovementService';
 
 @Service()
 export default class ImportService {
@@ -14,6 +15,9 @@ export default class ImportService {
 
   @Inject()
   private readonly categoryService: CategoryService;
+
+  @Inject()
+  private readonly movementService: MovementService;
 
   async fromCsv(csv: string): Promise<Movement[]> {
     try {
@@ -38,7 +42,6 @@ export default class ImportService {
         mapValues: ({ value }) => value.toLowerCase(),
         skipLines: 2,
       });
-      this.logger.info(rows);
 
       return Promise.all(rows.map(row => this.convertCsvRowToMovement(row)));
     } catch (e) {
@@ -49,15 +52,15 @@ export default class ImportService {
 
   async convertCsvRowToMovement(row: neatCsv.Row): Promise<Movement> {
     const category = await this.categoryService.findCategoryByNameOrCreate(row.category);
-    return new Movement({
+    return await this.movementService.findOrCreate({
       year: parseInt(row.year),
       month: this.monthConverter(row.month),
-      date: moment(row.date, 'DD/MM/YYYY'),
+      date: moment(row.date, 'DD/MM/YYYY').toDate(),
       amount: currencyFormatter.unformat(row.amount, { code: 'EUR' }),
       label: row.label,
       category: category,
       categoryId: category.id,
-    }).save();
+    });
   }
 
   monthConverter(month: string): number {

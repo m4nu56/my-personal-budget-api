@@ -1,11 +1,12 @@
 import 'reflect-metadata';
-import Movement from '../models/Movement';
+import Movement, { MovementAttributes } from '../models/Movement';
 import { Inject, Service } from 'typedi';
 import { Category } from '../models/Category';
 import { Logger } from 'winston';
 import PaginatedResult from '../types/PaginatedResult';
 import StandardService from './core/StandardService';
 import { IPaginationProps } from './core/IPaginationProps';
+import Sequelize from 'sequelize';
 
 @Service()
 export default class MovementService extends StandardService {
@@ -75,6 +76,50 @@ export default class MovementService extends StandardService {
       });
     } catch (e) {
       this.logger.error(`delete movement with ${id} ${e}`);
+      throw e;
+    }
+  }
+
+  deleteRange(start: Date, end: Date): void {
+    try {
+      Movement.destroy({
+        where: {
+          date: {
+            [Sequelize.Op.gte]: start,
+            [Sequelize.Op.lte]: end,
+          },
+        },
+        cascade: true,
+      });
+    } catch (e) {
+      this.logger.error(`deleteRange movements with start=${start}, end=${end} ${e}`);
+      throw e;
+    }
+  }
+
+  findOrCreate(movement: MovementAttributes): Promise<Movement> {
+    try {
+      return Movement.findOrCreate<Movement>({
+        defaults: movement,
+        where: {
+          date: {
+            [Sequelize.Op.eq]: movement.date,
+          },
+          amount: movement.amount,
+          label: movement.label,
+        },
+      }).then(([movement, created]) => {
+        if (created) {
+          this.logger.info(`new movement created`);
+        } else {
+          this.logger.warn(
+            `movement already exists: date: ${movement.date}, amount: ${movement.amount}, label: ${movement.label}. It was not created`,
+          );
+        }
+        return movement;
+      });
+    } catch (e) {
+      this.logger.error(`findOrCreate(${movement}): ${e}`);
       throw e;
     }
   }
