@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Inject, Service } from 'typedi';
 import { Logger } from 'winston';
 import { Category } from '../models/Category';
