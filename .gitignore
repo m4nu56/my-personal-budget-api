@@ -5,6 +5,7 @@
 
 # testing
 /coverage
+/__tests__/assets/bnp_export.csv
 
 # production
 /build
