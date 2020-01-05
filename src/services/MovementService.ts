@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import Movement from '../models/Movement';
 import { Inject, Service } from 'typedi';
 import { Category } from '../models/Category';

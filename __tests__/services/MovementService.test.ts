@@ -2,6 +2,7 @@ import { Container } from 'typedi';
 import MovementService from '../../src/services/MovementService';
 import LoggerInstance from '../../src/loaders/logger';
 import { createCategory } from './CategoryService.test';
+import moment = require('moment');
 
 Container.set('logger', LoggerInstance);
 
@@ -10,12 +11,12 @@ beforeAll(async () => {
   category = await createCategory();
 });
 
-async function createMovement() {
+async function createMovement(amount = 12, date = moment().format('YYYY-MM-DD'), label = 'toto') {
   let movementService = Container.get(MovementService);
   return await movementService.create({
-    amount: 12,
-    date: new Date(),
-    label: 'toto',
+    amount: amount,
+    date: date,
+    label: label,
     categoryId: category.id,
   });
 }
@@ -49,9 +50,28 @@ describe('MovementService', () => {
     expect(m).toBeNull();
   });
 
-  test('creates a new movement', async () => {
-    const movement = await createMovement();
-    expect(movement.amount).toEqual(12);
+  test('creates a new movement without year and date should use those from the given date', async () => {
+    const movement = await createMovement(15, '2020-01-06', 'label');
+    expect(movement.amount).toEqual(15);
+    expect(movement.date).toEqual('2020-01-06');
+    expect(movement.label).toEqual('label');
+    expect(movement.year).toEqual(2020);
+    expect(movement.month).toEqual(1);
+  });
+
+  test('creates a new movement with year and date should use those', async () => {
+    let movementService = Container.get(MovementService);
+    const movement = await movementService.create({
+      amount: 55,
+      date: '2020-01-15',
+      label: 'label',
+      categoryId: category.id,
+      year: 2019,
+      month: 12,
+    });
+    expect(movement.date).toEqual('2020-01-15');
+    expect(movement.year).toEqual(2019);
+    expect(movement.month).toEqual(12);
   });
 
   test('updates a movement with a sequelize object', async () => {
