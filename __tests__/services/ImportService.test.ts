@@ -4,17 +4,20 @@ import ImportService from '../../src/services/ImportService';
 import fs from 'fs';
 import path from 'path';
 import moment = require('moment');
-import CategoryService from '../../src/services/CategoryService';
 
 Container.set('logger', LoggerInstance);
-Container.set(CategoryService, CategoryService);
 
 describe('ImportService', () => {
   test('import a csv', async () => {
+    // GIVEN
     // const csv = 'type,part\nunicorn,horn\nrainbow,pink';
     const filePath = path.join(__dirname, '../assets/bnp_tests.csv');
     const csv = await fs.readFileSync(filePath).toString();
+
+    // WHEN
     let movements = await Container.get(ImportService).fromCsv(csv);
+
+    // THEN
     expect(movements.length > 0).toBeTruthy();
     movements.forEach(movement => {
       expect(typeof movement.year).toBe('number');

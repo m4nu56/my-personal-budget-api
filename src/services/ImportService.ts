@@ -1,18 +1,19 @@
+import 'reflect-metadata';
 import Movement from '../models/Movement';
 import { Inject, Service } from 'typedi';
 import { Logger } from 'winston';
 import neatCsv from 'neat-csv';
 import moment from 'moment';
 import currencyFormatter from 'currency-formatter';
-import { Category } from '../models/Category';
 import CategoryService from './CategoryService';
 
 @Service()
 export default class ImportService {
   @Inject('logger')
-  logger: Logger;
+  private readonly logger: Logger;
 
-  categoryService: CategoryService = new CategoryService();
+  @Inject()
+  private readonly categoryService: CategoryService;
 
   async fromCsv(csv: string): Promise<Movement[]> {
     try {
@@ -34,12 +35,10 @@ export default class ImportService {
           'mutuelle',
           'reste_a_charge',
         ],
-        // mapHeaders: ({ header, index }) => header.toLowerCase(),
-        mapValues: ({ header, index, value }) => value.toLowerCase(),
+        mapValues: ({ value }) => value.toLowerCase(),
         skipLines: 2,
       });
       this.logger.info(rows);
-      //=> [{type: 'unicorn', part: 'horn'}, {type: 'rainbow', part: 'pink'}]
 
       return Promise.all(rows.map(row => this.convertCsvRowToMovement(row)));
     } catch (e) {
@@ -49,7 +48,7 @@ export default class ImportService {
   }
 
   async convertCsvRowToMovement(row: neatCsv.Row): Promise<Movement> {
-    const category = await this.findCategoryByName(row.category);
+    const category = await this.categoryService.findCategoryByNameOrCreate(row.category);
     return new Movement({
       year: parseInt(row.year),
       month: this.monthConverter(row.month),
@@ -59,10 +58,6 @@ export default class ImportService {
       category: category,
       categoryId: category.id,
     }).save();
-  }
-
-  async findCategoryByName(name: string): Promise<Category> {
-    return await this.categoryService.findCategoryByNameOrCreate(name);
   }
 
   monthConverter(month: string): number {
