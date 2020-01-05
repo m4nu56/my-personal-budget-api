@@ -31,7 +31,7 @@ export default class Movement extends Model implements MovementAttributes {
   public category?: Category;
 }
 
-const sequelize = new Sequelize(config.databaseURL);
+const sequelize = new Sequelize(config.database.url, config.database.options);
 Movement.init(
   {
     id: {

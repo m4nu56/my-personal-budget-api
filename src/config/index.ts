@@ -16,15 +16,13 @@ export default {
    */
   port: parseInt(process.env.PORT, 10),
 
-  /**
-   * That long string for database access
-   */
-  databaseURL: process.env.DATABASE_URL,
-
-  /**
-   * If the database requires SSL Connection
-   */
-  databaseSSL: process.env.DATABASE_SSL,
+  database: {
+    url: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_SSL,
+    options: {
+      logging: false,
+    },
+  },
 
   /**
    * Your secret sauce

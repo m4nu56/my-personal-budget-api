@@ -9,7 +9,7 @@ export class Category extends Model {
   public readonly updatedAt!: Date;
 }
 
-const sequelize = new Sequelize(config.databaseURL);
+const sequelize = new Sequelize(config.database.url, config.database.options);
 
 Category.init(
   {
