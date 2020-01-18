@@ -5,8 +5,7 @@
   "scripts": {
     "build": "tsc",
     "heroku-postbuild": "mv .env.heroku .env && npm run build",
-    "dev": "nodemon",
-    "start": "serve -s build",
+    "start": "nodemon",
     "inspect": "nodemon --inspect src/app.ts",
     "test": "jest",
     "test:integration": "newman run integration-tests/postman_collection.json --environment integration-tests/localhost.json",

@@ -11,9 +11,6 @@ if (!envFound) {
 }
 
 export default {
-  /**
-   * Your favorite port
-   */
   port: parseInt(process.env.PORT, 10),
 
   database: {
