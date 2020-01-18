@@ -100,12 +100,6 @@ ALTER TABLE ONLY public.t_movement
     ADD CONSTRAINT t_movement_id_category_fkey FOREIGN KEY (id_category) REFERENCES public.t_category(id);
 
 
-CREATE TRIGGER init_movement_year_and_month_and_dates
-    BEFORE INSERT
-    ON t_movement
-    FOR EACH ROW
-EXECUTE PROCEDURE initMovementWithYearAndMonthAndDates();
-
 CREATE OR REPLACE FUNCTION initMovementWithYearAndMonthAndDates() RETURNS TRIGGER AS
 $example_table$
 BEGIN
@@ -122,3 +116,9 @@ BEGIN
     RETURN NEW;
 END;
 $example_table$ LANGUAGE plpgsql;
+
+CREATE TRIGGER init_movement_year_and_month_and_dates
+    BEFORE INSERT
+    ON t_movement
+    FOR EACH ROW
+EXECUTE PROCEDURE initMovementWithYearAndMonthAndDates();

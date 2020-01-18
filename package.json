@@ -4,7 +4,7 @@
   "private": false,
   "scripts": {
     "build": "tsc",
-    "heroku-postbuild": "npm run build",
+    "heroku-postbuild": "mv .env.heroku .env && npm run build",
     "start": "nodemon",
     "inspect": "nodemon --inspect src/app.ts",
     "test": "jest",
