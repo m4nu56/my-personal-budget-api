@@ -7,6 +7,7 @@ import moment from 'moment';
 import currencyFormatter from 'currency-formatter';
 import CategoryService from './CategoryService';
 import MovementService from './MovementService';
+import * as fs from 'fs';
 
 @Service()
 export default class ImportService {
@@ -18,6 +19,17 @@ export default class ImportService {
 
   @Inject()
   private readonly movementService: MovementService;
+
+  async fromCsvPath(csvPath: string): Promise<Movement[]> {
+    fs.readFile(csvPath, { encoding: 'UTF8' }, (error, data) => {
+      if (error) {
+        throw error;
+      }
+      console.log(data);
+      return this.fromCsv(data);
+    });
+    return null;
+  }
 
   async fromCsv(csv: string): Promise<Movement[]> {
     try {
@@ -52,15 +64,24 @@ export default class ImportService {
 
   async convertCsvRowToMovement(row: neatCsv.Row): Promise<Movement> {
     const category = await this.categoryService.findCategoryByNameOrCreate(row.category);
-    return await this.movementService.findOrCreate({
-      year: parseInt(row.year),
-      month: this.monthConverter(row.month),
-      date: moment(row.date, 'DD/MM/YYYY').toDate(),
-      amount: currencyFormatter.unformat(row.amount, { code: 'EUR' }),
-      label: row.label,
-      category: category,
-      categoryId: category.id,
-    });
+    try {
+      return await this.movementService.findOrCreate({
+        year: parseInt(row.year),
+        month: this.monthConverter(row.month),
+        date: moment(row.date, 'DD/MM/YYYY').toDate(),
+        amount: currencyFormatter.unformat(row.amount, { code: 'EUR' }),
+        label: row.label,
+        category: category,
+        categoryId: category.id,
+      });
+    } catch (e) {
+      this.logger.error(
+        `Error findOrCreate movement ${Object.entries(row)
+          .map(entry => `[${entry[0]}:${entry[1]}]`)
+          .join(',')}: ${e.message}`,
+      );
+      throw e;
+    }
   }
 
   monthConverter(month: string): number {
@@ -81,6 +102,6 @@ export default class ImportService {
     if (months.hasOwnProperty(month)) {
       return months[month];
     }
-    throw new Error(`month: ${month} not found in associative array: ${months}`);
+    throw new Error(`month: "${month}" not found in associative object: "${Object.keys(months).join(',')}"`);
   }
 }
