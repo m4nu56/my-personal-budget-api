@@ -21,19 +21,19 @@ export default class ImportService {
   private readonly movementService: MovementService;
 
   async fromCsvPath(csvPath: string): Promise<Movement[]> {
-    fs.readFile(csvPath, { encoding: 'UTF8' }, (error, data) => {
-      if (error) {
-        throw error;
-      }
-      console.log(data);
-      return this.fromCsv(data);
+    return new Promise((resolve, reject) => {
+      fs.readFile(csvPath, { encoding: 'UTF8' }, (error, data) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(this.fromCsv(data));
+      });
     });
-    return null;
   }
 
   async fromCsv(csv: string): Promise<Movement[]> {
     try {
-      let rows = await neatCsv(csv, {
+      const rows: neatCsv.Row[] = await neatCsv(csv, {
         headers: [
           'year',
           'month',
@@ -55,14 +55,14 @@ export default class ImportService {
         skipLines: 2,
       });
 
-      return Promise.all(rows.map(row => this.convertCsvRowToMovement(row)));
+      return Promise.all(rows.map(row => this.createMovementFromCsvRow(row)));
     } catch (e) {
       this.logger.error(`import fromCsv ${e}`);
       throw e;
     }
   }
 
-  async convertCsvRowToMovement(row: neatCsv.Row): Promise<Movement> {
+  async createMovementFromCsvRow(row: neatCsv.Row): Promise<Movement> {
     const category = await this.categoryService.findCategoryByNameOrCreate(row.category);
     try {
       return await this.movementService.findOrCreate({
