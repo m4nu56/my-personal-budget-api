@@ -4,6 +4,7 @@ import { Category } from './Category';
 
 export interface MovementAttributes {
   id?: number;
+  fitId?: number;
   year?: number;
   month?: number;
   date: Date;
@@ -17,6 +18,7 @@ export interface MovementAttributes {
 
 export default class Movement extends Model implements MovementAttributes {
   public id!: number;
+  public fitId!: number;
   public year!: number;
   public month!: number;
   public date!: Date;
@@ -37,6 +39,10 @@ Movement.init(
     id: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
+      primaryKey: true,
+    },
+    fitId: {
+      type: DataTypes.BIGINT,
       primaryKey: true,
     },
     year: {
