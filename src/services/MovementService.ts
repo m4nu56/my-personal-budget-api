@@ -10,7 +10,6 @@ import { Op, QueryTypes, Sequelize } from 'sequelize';
 
 import { MovementCategoryMonth } from '../models/MovementCategoryMonth';
 import config from '../config';
-import _ from 'lodash';
 
 @Service()
 export default class MovementService extends StandardService {
@@ -106,11 +105,16 @@ export default class MovementService extends StandardService {
       return Movement.findOrCreate<Movement>({
         defaults: movement,
         where: {
-          date: {
-            [Op.eq]: movement.date,
-          },
-          amount: movement.amount,
-          label: movement.label,
+          [Op.or]: [
+            { fitId: movement.fitId ? movement.fitId : 0 },
+            {
+              date: {
+                [Op.eq]: movement.date,
+              },
+              amount: movement.amount,
+              label: movement.label,
+            },
+          ],
         },
       }).then(([movement, created]) => {
         if (created) {

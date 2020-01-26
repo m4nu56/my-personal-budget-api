@@ -11,11 +11,11 @@ afterAll(async () => {});
 describe('OFXParser', () => {
   test('parse a .ofx file', async () => {
     // GIVEN
-    const filePath = path.join(__dirname, '../assets/CA20200126_143204.ofx');
+    const filePath = path.join(__dirname, '../../assets/ca_ofx_export_test.ofx');
     // WHEN
     let movements = await Container.get(OFXParser).parseFile(filePath);
     // THEN
-    expect(movements.length > 0).toBeTruthy();
+    expect(movements.length).toEqual(3);
     movements.forEach(movement => {
       expect(movement.fitId).not.toBeNull();
       expect(movement.label).not.toBeNull();
@@ -23,8 +23,8 @@ describe('OFXParser', () => {
       expect(moment(movement.date).isValid()).toBeTruthy();
     });
 
-    expect(movements[0].fitId).toEqual('5762660390186');
-    expect(movements[0].label).toEqual('CIBOURE PORT         25/01 15H27');
+    expect(movements[0].fitId).toEqual('1234560390186');
+    expect(movements[0].label).toEqual('XXXX  25/01 15H27');
     expect(movements[0].amount).toEqual(-50.0);
     expect(movements[0].date).toEqual(new Date(2020, 0, 25));
   });

@@ -13,7 +13,7 @@ export default (app: Router) => {
 
   route.post('/', upload.any(), async (req: MulterRequest, res: Response, next: NextFunction) => {
     try {
-      const movements = await Container.get(ImportService).fromCsvPath(req.files[0].path);
+      const movements = await Container.get(ImportService).import(req.files[0]);
       return res.status(201).send(movements);
     } catch (e) {
       console.error(e);
