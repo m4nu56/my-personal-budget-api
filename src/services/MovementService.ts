@@ -118,7 +118,7 @@ export default class MovementService extends StandardService {
         },
       }).then(([movement, created]) => {
         if (created) {
-          this.logger.info(`new movement created`);
+          this.logger.info(`new movement created with id "${movement.id}"`);
         } else {
           this.logger.warn(
             `movement already exists: date: ${movement.date}, amount: ${movement.amount}, label: ${movement.label}. It was not created`,

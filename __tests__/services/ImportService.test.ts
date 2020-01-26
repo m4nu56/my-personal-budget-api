@@ -12,10 +12,6 @@ afterAll(async () => {
 });
 
 describe('ImportService', () => {
-  test('moment', () => {
-    expect(moment(new Date(2019, 0, 15)).format('YYYY-MM-DD')).toEqual('2019-01-15');
-  });
-
   test('Save a MovementAttribute to database', async () => {
     // WHEN
     let movements = await Container.get(ImportService).findOrCreateMovements([

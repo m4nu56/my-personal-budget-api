@@ -20,7 +20,7 @@ export default (app: Router) => {
 
   route.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const category = await Container.get(CategoryService).getCategoryById(req.params.id);
+      const category = await Container.get(CategoryService).getCategoryById(Number.parseInt(req.params.id));
       return res.status(200).send(category);
     } catch (e) {
       console.error(e);
@@ -40,7 +40,7 @@ export default (app: Router) => {
 
   route.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await Container.get(CategoryService).delete(req.params.id);
+      await Container.get(CategoryService).delete(Number.parseInt(req.params.id));
       return res.status(200).send();
     } catch (e) {
       console.error(e);
@@ -50,7 +50,7 @@ export default (app: Router) => {
 
   route.patch('/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const category = await Container.get(CategoryService).update(req.params.id, req.body);
+      const category = await Container.get(CategoryService).update(Number.parseInt(req.params.id), req.body);
       return res.status(200).send(category);
     } catch (e) {
       console.error(e);

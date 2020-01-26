@@ -101,12 +101,12 @@ export default class CategoryService extends StandardService {
         where: { name: name },
       }).then(([category, created]) => {
         if (created) {
-          this.logger.info(`new category created: ${name}`);
+          this.logger.info(`new category created: ${category.name} with id: ${category.id}`);
         }
         return category;
       });
     } catch (e) {
-      this.logger.error(`findCategoryByName(${name})`, e);
+      this.logger.error(`findCategoryByName(${name}): ${e.message}`);
       throw e;
     }
   }
