@@ -18,6 +18,7 @@ export default {
     ssl: process.env.DATABASE_SSL,
     options: {
       logging: false,
+      timezone: 'CET',
     },
   },
 
