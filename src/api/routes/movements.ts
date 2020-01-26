@@ -20,7 +20,7 @@ export default (app: Router) => {
 
   route.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const movement = await Container.get(MovementService).getMovementById(req.params.id);
+      const movement = await Container.get(MovementService).getMovementById(Number.parseInt(req.params.id));
       return res.status(200).send(movement);
     } catch (e) {
       console.error(e);
@@ -40,7 +40,7 @@ export default (app: Router) => {
 
   route.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await Container.get(MovementService).delete(req.params.id);
+      await Container.get(MovementService).delete(Number.parseInt(req.params.id));
       return res.status(200).send();
     } catch (e) {
       console.error(e);
@@ -50,7 +50,7 @@ export default (app: Router) => {
 
   route.patch('/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const movement = await Container.get(MovementService).update(req.params.id, req.body);
+      const movement = await Container.get(MovementService).update(Number.parseInt(req.params.id), req.body);
       return res.status(200).send(movement);
     } catch (e) {
       console.error(e);
