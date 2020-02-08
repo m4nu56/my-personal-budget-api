@@ -35,18 +35,19 @@ jobs:
     - name: copy .env
       run: cp .env.test .env
 
-    - name: npm test
-      uses: harmon758/postgresql-action@v1
+    - uses: harmon758/postgresql-action@v1
       with:
         postgresql db: budget
         postgresql user: postgres
         postgresql password: postgres
         postgresql init scripts: init-sql
         postgresql version: '11'  # See https://hub.docker.com/_/postgres for available versions
+
+    - name: npm test
       run: npm test
-#      env:
+        #      env:
         # use localhost for the host here because we are running the job on the VM.
-        # If we were running the job on in a container this would be postgres
+      # If we were running the job on in a container this would be postgres
 #        POSTGRES_HOST: localhost
 #        DB_PORT: ${{ job.services.postgres.ports[5432] }} # get randomly assigned published port
 #        DATABASE_URL: postgres://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/budget
