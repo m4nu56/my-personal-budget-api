@@ -8,7 +8,7 @@ import moment = require('moment');
 Container.set('logger', LoggerInstance);
 
 let category;
-beforeAll(async () => {
+beforeEach(async () => {
   category = await createCategory();
 });
 

@@ -4,9 +4,14 @@ import ImportService from '../../src/services/ImportService';
 import MovementService from '../../src/services/MovementService';
 import PaginatedResult from '../../src/types/PaginatedResult';
 import moment = require('moment');
+import { createCategory } from './CategoryService.test';
 
 Container.set('logger', LoggerInstance);
 
+let category;
+beforeEach(async () => {
+  category = await createCategory();
+});
 afterAll(async () => {
   await Container.get(MovementService).deleteRange(moment('1900-01-01').toDate(), moment('2900-01-01').toDate());
 });
@@ -21,7 +26,7 @@ describe('ImportService', () => {
         date: new Date(2019, 0, 15),
         label: 'Coco',
         amount: 15.55,
-        categoryId: 1,
+        categoryId: category.id,
       },
       {
         year: 2020,
@@ -29,7 +34,7 @@ describe('ImportService', () => {
         date: new Date(2020, 10, 15),
         label: 'Byebye',
         amount: 17,
-        categoryId: 1,
+        categoryId: category.id,
       },
     ]);
 
@@ -51,6 +56,6 @@ describe('ImportService', () => {
     expect(movementsDB.data[0].date).toEqual('2019-01-15');
     expect(movementsDB.data[0].label).toEqual('Coco');
     expect(movementsDB.data[0].amount).toEqual(15.55);
-    expect(movementsDB.data[0].categoryId).toEqual(1);
+    expect(movementsDB.data[0].categoryId).toEqual(category.id);
   });
 });
