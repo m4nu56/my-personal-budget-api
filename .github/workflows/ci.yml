@@ -35,7 +35,7 @@ jobs:
     - name: copy .env
       run: cp .env.test .env
 
-    - uses: harmon758/postgresql-action@v1
+    - uses: danielweller-swp/postgresql-action@v1
       with:
         postgresql db: budget
         postgresql user: postgres
