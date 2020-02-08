@@ -35,13 +35,12 @@ jobs:
     - name: copy .env
       run: cp .env.test .env
 
-    - uses: danielweller-swp/postgresql-action@v1
+    - uses: danielweller-swp/postgresql-action
       with:
         postgresql db: budget
         postgresql user: postgres
         postgresql password: postgres
-        postgresql init scripts: 'init-sql'
-        postgresql version: '11'  # See https://hub.docker.com/_/postgres for available versions
+        postgresql init scripts: init-sql
 
     - name: npm test
       run: npm test
