@@ -37,10 +37,10 @@ jobs:
 
     - uses: danielweller-swp/postgresql-action@v1
       with:
-        postgresql db: budget
-        postgresql user: postgres
-        postgresql password: postgres
-        postgresql init scripts: init-sql
+        postgresql db: 'budget'
+        postgresql user: 'postgres'
+        postgresql password: 'postgres'
+        postgresql init scripts: 'init-sql'
 
     - name: npm test
       run: npm test
