@@ -18,3 +18,9 @@ jobs:
       run: |
         npm install
         npm run build --if-present
+
+    - name: copy .env
+      run: cp .env.heroku .env
+
+    - name: npm test
+      run: npm test
