@@ -3,10 +3,12 @@ import MovementService from '../../src/services/MovementService';
 import LoggerInstance from '../../src/loaders/logger';
 import { createCategory } from './CategoryService.test';
 import CategoryService from '../../src/services/CategoryService';
+import config from '../../src/config';
 import moment = require('moment');
 
 Container.set('logger', LoggerInstance);
 
+beforeAll(() => console.log(config));
 let category;
 beforeEach(async () => {
   category = await createCategory();
