@@ -116,18 +116,23 @@ export default class MovementService extends StandardService {
             },
           ],
         },
-      }).then(([movement, created]) => {
-        if (created) {
-          this.logger.info(`new movement created with id "${movement.id}"`);
-        } else {
-          this.logger.warn(
-            `movement already exists: date: ${movement.date}, amount: ${movement.amount}, label: ${movement.label}. It was not created`,
-          );
-        }
-        return movement;
-      });
+      }).then(
+        ([movement, created]) => {
+          if (created) {
+            this.logger.info(`new movement created with id "${movement.id}"`);
+          } else {
+            this.logger.warn(
+              `movement already exists: date: ${movement.date}, amount: ${movement.amount}, label: ${movement.label}. It was not created`,
+            );
+          }
+          return movement;
+        },
+        error => {
+          throw error;
+        },
+      );
     } catch (e) {
-      this.logger.error(`findOrCreate(${movement}): ${e}`);
+      this.logger.error(`findOrCreate(): ${e}`, e);
       throw e;
     }
   }

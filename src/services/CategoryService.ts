@@ -71,7 +71,7 @@ export default class CategoryService extends StandardService {
   deleteAll(): void {
     try {
       Category.destroy({
-        where: {},
+        where: { id: { [Sequelize.Op.ne]: 0 } },
         cascade: true,
       });
     } catch (e) {

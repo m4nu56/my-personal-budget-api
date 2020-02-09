@@ -123,3 +123,6 @@ CREATE TRIGGER init_movement_year_and_month_and_dates
     ON t_movement
     FOR EACH ROW
 EXECUTE PROCEDURE initMovementWithYearAndMonthAndDates();
+
+INSERT INTO t_category (id, name)
+VALUES (0, 'Undefined')

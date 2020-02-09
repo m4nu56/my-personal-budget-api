@@ -51,9 +51,7 @@ export default class ImportService {
   findOrCreateMovements = (movements: MovementAttributes[]): Promise<Movement[]> =>
     Promise.all(
       movements.map(movement => {
-        try {
-          return this.movementService.findOrCreate(movement);
-        } catch (e) {
+        return this.movementService.findOrCreate(movement).catch(e => {
           this.logger.error(
             `Error findOrCreateMovements with movement =
             ${Object.entries(movement)
@@ -61,7 +59,7 @@ export default class ImportService {
               .join(',')}: ${e.message}`,
           );
           throw e;
-        }
+        });
       }),
     );
 }
