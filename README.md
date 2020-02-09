@@ -1,5 +1,7 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![Build Status](https://travis-ci.org/m4nu56/my-personal-budget-api.svg?branch=master)](https://travis-ci.org/m4nu56/my-personal-budget-api)
+[![Build Status](https://github.com/m4nu56/my-personal-budget-api/workflows/CI/badge.svg)](https://github.com/m4nu56/my-personal-budget-api/workflows/CI/badge.svg)
+
 
 # Budget with React [API]
 
