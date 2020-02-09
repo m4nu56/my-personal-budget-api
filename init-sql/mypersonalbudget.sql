@@ -8,6 +8,7 @@ SET default_with_oids = false;
 
 CREATE TABLE public.t_movement (
     id bigint NOT NULL,
+    fit_id bigint,
     year integer,
     month integer,
     date date,
